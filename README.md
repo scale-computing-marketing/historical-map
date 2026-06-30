@@ -27,7 +27,8 @@ It needs an internet connection: the historical basemap and the D3 libraries loa
 | `app/engine.js` | **War-agnostic** engine — the Temporal Resolver, search, quiz logic. Knows nothing about any specific war. |
 | `app/app.js` | Presentation — map rendering, timeline, panels, state synchronization. |
 | `app/data/american-revolution.js` | The war, as pure data. |
-| `design-document.html` | The full design & architecture document (open in a browser). |
+| `DESIGN.md` | The full design & architecture document, in Markdown (readable on GitHub, diff-friendly). |
+| `design-document.html` | The same document, richly formatted with wireframes and a live embedded reference map (open in a browser). |
 
 ## Architecture in one idea
 
