@@ -523,14 +523,20 @@
   function renderWorld() {
     const w = E.worldAt(war, state.year);
     const pop = w.worldPopulation;
-    const card = (lbl, html) => `<div class="wcard"><div class="lbl">${lbl}</div><div class="val">${html}</div></div>`;
+    const card = (lbl, html, cls) => `<div class="wcard${cls ? ' ' + cls : ''}"><div class="lbl">${lbl} ${cls === 'wide' ? '<span class="lbl-yr">· ' + state.year + '</span>' : ''}</div><div class="val">${html}</div></div>`;
     const ul = arr => `<ul>${(arr || []).map(li).join('')}</ul>`;
     document.getElementById('world-year').textContent = 'The world in ' + state.year;
+    // Concurrent wars elsewhere in the world, filtered to this year.
+    const conflicts = E.conflictsAt(war, state.year);
+    const warsHtml = conflicts.length
+      ? `<ul class="warlist">${conflicts.map(c =>
+          `<li><span class="wl-name">${c.name}</span><span class="wl-meta">${c.region} · ${c.start}${c.end !== c.start ? '–' + c.end : ''}</span><span class="wl-note">${c.note}</span></li>`).join('')}</ul>`
+      : ul(w.otherConflicts);  // fall back to the war's own curated list
     document.getElementById('world-cards').innerHTML =
+      card('Wars around the world', warsHtml, 'wide') +
       (pop ? card('World population', `${(pop.low / 1e6 | 0)}–${(pop.high / 1e6 | 0)} million <span class="conf low">est.</span>`) : '') +
       card('Largest empires', ul(w.largestEmpires)) +
       card('Largest cities', ul(w.largestCities)) +
-      card('Other conflicts', ul(w.otherConflicts)) +
       card('Science', ul(w.science)) +
       card('Culture', ul(w.culture));
   }
@@ -644,12 +650,6 @@
     });
     document.body.addEventListener('click', closeAll);
 
-    document.getElementById('pin').onclick = () => {
-      state.railPinned = !state.railPinned;
-      document.getElementById('app').classList.toggle('rail-pinned', state.railPinned);
-      document.getElementById('rail').classList.toggle('pinned', state.railPinned);
-      document.getElementById('pin').textContent = state.railPinned ? '⇥' : '⇤';
-    };
     document.getElementById('railclose').onclick = () => { document.getElementById('rail').classList.remove('open'); state.railPinned = false; document.getElementById('rail').classList.remove('pinned'); document.getElementById('app').classList.remove('rail-pinned'); };
     document.getElementById('world-btn').onclick = () => document.getElementById('world').classList.toggle('open');
     document.getElementById('world-close').onclick = () => document.getElementById('world').classList.remove('open');

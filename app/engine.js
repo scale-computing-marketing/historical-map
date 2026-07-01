@@ -90,6 +90,16 @@
       return Object.assign({}, wc._default || {}, wc[year] || {});
     },
 
+    /* Other wars under way elsewhere in `year`, drawn from the shared global
+       list. Excludes the war being viewed (matched on name / alt-names) so we
+       never list the current conflict back to the reader. */
+    conflictsAt(war, year) {
+      const skip = new Set([war.meta.name, ...(war.meta.altNames || [])].map(s => s.toLowerCase()));
+      return (window.HWE.globalConflicts || [])
+        .filter(c => year >= c.start && year <= c.end && !skip.has(c.name.toLowerCase()))
+        .sort((a, b) => a.start - b.start || a.name.localeCompare(b.name));
+    },
+
     entity(war, id) {
       if (!id) return null;
       const pools = [war.nations, war.leaders, war.battles, war.treaties, war.cities];
