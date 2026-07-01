@@ -71,6 +71,15 @@
 .plabel{font-family:var(--ui);font-size:15px;font-weight:600;fill:var(--ink);pointer-events:none;
   paint-order:stroke;stroke:var(--page);stroke-width:3.5px;stroke-linejoin:round}
 
+/* naturalistic (glossy textbook) diagrams — organelles keep their own colours,
+   so hover/selection is a group-level glow rather than a fill swap. */
+.bio-diagram.natural .part{cursor:pointer;transition:filter .16s ease}
+.bio-diagram.natural .part:hover{filter:brightness(1.06) saturate(1.05)}
+.bio-diagram.natural .part.selected{filter:drop-shadow(0 0 9px var(--accent)) brightness(1.03)}
+.lead-nat{stroke:var(--rule2);stroke-width:1.4;fill:none}
+.pin-nat{fill:var(--muted)}
+.nolabels{pointer-events:none}
+
 /* tree-of-life nodes + connectors */
 .shape.node{fill-opacity:.9}
 .part:hover .shape.node{fill-opacity:1}

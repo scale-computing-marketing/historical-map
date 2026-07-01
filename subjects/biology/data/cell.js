@@ -70,95 +70,78 @@
   ];
 
   /* ---- diagram ---------------------------------------------------------- */
-  /* A schematic animal cell. Every organelle is a <g class="part cat-…"
-     data-part="id"> so a click anywhere in the group (shape or label) selects
-     it. Fills come from category classes in the biology stylesheet.           */
-  const L = (x, y, t, anchor) => `<text class="plabel" x="${x}" y="${y}" text-anchor="${anchor || 'middle'}">${t}</text>`;
+  /* A glossy, textbook-style animal cell: a translucent sphere with 3-D shaded
+     organelles. Organelles use naturalistic colours (their role is shown in the
+     rail and legend, not on the diagram). Every organelle is a
+     <g class="part" data-part="id"> the explorer wires to the rail. Decorative
+     gloss/labels sit in `.nolabels` groups so they never block a click.        */
   const svg = `
-  <svg viewBox="0 0 840 600" xmlns="http://www.w3.org/2000/svg" class="bio-diagram" role="img" aria-label="Animal cell diagram">
-    <!-- membrane + cytoplasm -->
-    <g class="part cat-structure" data-part="cytoplasm">
-      <ellipse class="shape" cx="420" cy="300" rx="392" ry="272"/>
-    </g>
-    <g class="part cat-structure" data-part="cell-membrane">
-      <ellipse class="shape hollow" cx="420" cy="300" rx="400" ry="280"/>
-      <ellipse class="shape hollow inner" cx="420" cy="300" rx="388" ry="268"/>
-      ${L(420, 44, 'Cell membrane')}
-    </g>
+  <svg viewBox="0 0 880 660" xmlns="http://www.w3.org/2000/svg" class="bio-diagram natural" role="img" aria-label="Animal cell diagram">
+    <defs>
+      <radialGradient id="c-body" cx="42%" cy="36%" r="72%"><stop offset="0%" stop-color="#f2fbff"/><stop offset="55%" stop-color="#d3edf8"/><stop offset="100%" stop-color="#a6d6ea"/></radialGradient>
+      <radialGradient id="c-shell" cx="50%" cy="50%" r="50%"><stop offset="83%" stop-color="#8fc9e3" stop-opacity="0"/><stop offset="95%" stop-color="#5aa7cc" stop-opacity=".5"/><stop offset="100%" stop-color="#3f8cb4" stop-opacity=".18"/></radialGradient>
+      <radialGradient id="c-nuc" cx="40%" cy="34%" r="70%"><stop offset="0%" stop-color="#fbd3e6"/><stop offset="50%" stop-color="#ec93bf"/><stop offset="100%" stop-color="#c95a93"/></radialGradient>
+      <radialGradient id="c-nucl" cx="42%" cy="36%" r="70%"><stop offset="0%" stop-color="#d95fa0"/><stop offset="100%" stop-color="#93336c"/></radialGradient>
+      <radialGradient id="c-mito" cx="36%" cy="30%" r="76%"><stop offset="0%" stop-color="#f4a79f"/><stop offset="55%" stop-color="#e46b62"/><stop offset="100%" stop-color="#bb3a34"/></radialGradient>
+      <radialGradient id="c-golgi" cx="40%" cy="30%" r="78%"><stop offset="0%" stop-color="#a6d98f"/><stop offset="100%" stop-color="#4f9a54"/></radialGradient>
+      <radialGradient id="c-vac" cx="38%" cy="30%" r="78%"><stop offset="0%" stop-color="#eaf7fb"/><stop offset="100%" stop-color="#b7dcea"/></radialGradient>
+      <radialGradient id="c-lyso" cx="38%" cy="32%" r="76%"><stop offset="0%" stop-color="#c9a6e0"/><stop offset="100%" stop-color="#8a56b0"/></radialGradient>
+      <linearGradient id="c-er" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#f6b25a"/><stop offset="100%" stop-color="#dd8a24"/></linearGradient>
+      <linearGradient id="c-cent" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#f2a94a"/><stop offset="100%" stop-color="#c97e1c"/></linearGradient>
+      <filter id="c-drop" x="-40%" y="-40%" width="180%" height="180%"><feDropShadow dx="0" dy="3" stdDeviation="4" flood-color="#1c3a4a" flood-opacity="0.26"/></filter>
+      <filter id="c-blur" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="10"/></filter>
+      <clipPath id="c-clip"><circle cx="430" cy="332" r="246"/></clipPath>
+    </defs>
 
-    <!-- nucleus -->
-    <g class="part cat-control" data-part="nucleus">
-      <ellipse class="shape" cx="440" cy="290" rx="132" ry="116"/>
-      <ellipse class="shape hollow inner2" cx="440" cy="290" rx="120" ry="104"/>
-      ${L(440, 200, 'Nucleus')}
-    </g>
-    <g class="part cat-control" data-part="nucleolus">
-      <circle class="shape" cx="466" cy="300" r="38"/>
-      ${L(466, 305, 'Nucleolus')}
-    </g>
+    <g class="part" data-part="cytoplasm"><circle cx="430" cy="332" r="246" fill="url(#c-body)" filter="url(#c-drop)"/></g>
 
-    <!-- rough ER (left of nucleus) with ribosome dots -->
-    <g class="part cat-manufacturing" data-part="rough-er">
-      <path class="shape stroke" d="M300 210 q-46 26 0 52 q46 26 0 52 q-46 26 0 52"/>
-      <path class="shape stroke" d="M330 206 q-46 26 0 52 q46 26 0 52 q-46 26 0 52"/>
-      <g class="dots"><circle r="4" cx="300" cy="210"/><circle r="4" cx="300" cy="262"/><circle r="4" cx="300" cy="314"/><circle r="4" cx="330" cy="206"/><circle r="4" cx="330" cy="258"/><circle r="4" cx="330" cy="310"/></g>
-      ${L(250, 196, 'Rough ER', 'end')}
-    </g>
-
-    <!-- smooth ER (right of nucleus) -->
-    <g class="part cat-manufacturing" data-part="smooth-er">
-      <path class="shape stroke" d="M600 226 q44 22 0 46 q-44 22 0 46 q44 22 0 46"/>
-      <path class="shape stroke" d="M624 232 q44 22 0 46 q-44 22 0 46"/>
-      ${L(648, 214, 'Smooth ER', 'start')}
-    </g>
-
-    <!-- golgi (lower left) -->
-    <g class="part cat-manufacturing" data-part="golgi">
-      <path class="shape stroke thick" d="M232 452 q70 -34 140 0"/>
-      <path class="shape stroke thick" d="M240 466 q64 -30 124 0"/>
-      <path class="shape stroke thick" d="M248 480 q58 -26 108 0"/>
-      <path class="shape stroke thick" d="M256 494 q52 -22 92 0"/>
-      ${L(302, 524, 'Golgi apparatus')}
-    </g>
-
-    <!-- mitochondria (two) -->
-    <g class="part cat-energy" data-part="mitochondria">
-      <g transform="translate(628 168) rotate(24)">
-        <ellipse class="shape" cx="0" cy="0" rx="64" ry="34"/>
-        <path class="shape crista" d="M-48 -6 q12 -18 24 0 q12 18 24 0 q12 -18 24 0 q12 18 24 0"/>
+    <g clip-path="url(#c-clip)">
+      <g class="part" data-part="rough-er">
+        <g fill="none" stroke="#e88ab6" stroke-width="13" stroke-linecap="round" opacity=".92">
+          <path d="M300 372 q40 -70 130 -78 q96 -8 150 46"/><path d="M300 404 q52 -74 140 -84 q92 -8 152 34"/><path d="M316 436 q60 -70 132 -80"/>
+        </g>
+        <g fill="#d76aa0"><circle cx="300" cy="372" r="4"/><circle cx="336" cy="330" r="4"/><circle cx="384" cy="300" r="4"/><circle cx="300" cy="404" r="4"/><circle cx="316" cy="436" r="4"/><circle cx="512" cy="300" r="4"/></g>
       </g>
-      <g transform="translate(452 486) rotate(-12)">
-        <ellipse class="shape" cx="0" cy="0" rx="58" ry="30"/>
-        <path class="shape crista" d="M-42 -4 q11 -16 22 0 q11 16 22 0 q11 -16 22 0 q11 16 22 0"/>
+      <g class="part" data-part="smooth-er">
+        <g fill="none" stroke="url(#c-er)" stroke-width="11" stroke-linecap="round"><path d="M556 300 q56 8 58 66 q-2 52 -58 60"/><path d="M566 356 q46 16 24 66"/></g>
       </g>
-      ${L(690, 150, 'Mitochondria', 'start')}
+      <g class="part" data-part="mitochondria">
+        <g filter="url(#c-drop)" transform="translate(566 214) rotate(24)"><ellipse rx="60" ry="31" fill="url(#c-mito)"/><path d="M-44 -6 q11 -17 22 0 q11 17 22 0 q11 -17 22 0 q11 17 22 0" fill="none" stroke="#fff" stroke-width="2.4" opacity=".7" stroke-linecap="round"/></g>
+        <g filter="url(#c-drop)" transform="translate(452 502) rotate(-12)"><ellipse rx="56" ry="29" fill="url(#c-mito)"/><path d="M-42 -5 q10 -16 21 0 q10 16 21 0 q10 -16 21 0 q10 16 21 0" fill="none" stroke="#fff" stroke-width="2.4" opacity=".7" stroke-linecap="round"/></g>
+      </g>
+      <g class="part" data-part="golgi">
+        <g filter="url(#c-drop)" fill="url(#c-golgi)"><path d="M262 476 q70 -40 142 0 l0 5 q-71 -34 -142 0Z"/><path d="M272 494 q60 -34 122 0 l0 5 q-61 -30 -122 0Z"/><path d="M282 512 q50 -28 102 0 l0 5 q-51 -24 -102 0Z"/><path d="M292 530 q40 -22 82 0 l0 5 q-41 -18 -82 0Z"/></g>
+        <circle cx="392" cy="522" r="7" fill="url(#c-golgi)"/><circle cx="410" cy="540" r="5" fill="url(#c-golgi)"/>
+      </g>
+      <g class="part" data-part="lysosome"><g filter="url(#c-drop)"><circle cx="250" cy="256" r="26" fill="url(#c-lyso)"/><g fill="#5e2f86"><circle cx="243" cy="250" r="3"/><circle cx="257" cy="257" r="3"/><circle cx="248" cy="264" r="3"/></g></g></g>
+      <g class="part" data-part="vacuole"><g filter="url(#c-drop)"><circle cx="632" cy="418" r="42" fill="url(#c-vac)"/><ellipse cx="620" cy="404" rx="12" ry="7" fill="#fff" opacity=".7"/></g></g>
+      <g class="part" data-part="centrosome"><g filter="url(#c-drop)"><rect x="238" y="176" width="40" height="15" rx="6" fill="url(#c-cent)"/><rect x="250" y="192" width="15" height="40" rx="6" fill="url(#c-cent)"/></g></g>
+      <g class="part" data-part="ribosomes"><g fill="#c9701f"><circle cx="520" cy="472" r="5"/><circle cx="540" cy="484" r="5"/><circle cx="508" cy="492" r="5"/><circle cx="352" cy="250" r="5"/><circle cx="372" cy="240" r="5"/></g></g>
+      <g class="part" data-part="nucleus"><g filter="url(#c-drop)"><circle cx="430" cy="336" r="96" fill="url(#c-nuc)"/><circle cx="430" cy="336" r="96" fill="none" stroke="#b5568c" stroke-width="3" opacity=".7"/><g fill="#fff" opacity=".8"><circle cx="404" cy="252" r="2.6"/><circle cx="452" cy="248" r="2.6"/><circle cx="352" cy="316" r="2.6"/><circle cx="510" cy="360" r="2.6"/></g></g></g>
+      <g class="part" data-part="nucleolus"><path d="M452 352 q-6 -30 20 -40 q26 -8 30 20 q6 30 -22 40 q-26 8 -28 -20Z" fill="url(#c-nucl)"/></g>
     </g>
 
-    <!-- free ribosomes -->
-    <g class="part cat-manufacturing" data-part="ribosomes">
-      <g class="dots big"><circle r="6" cx="200" cy="360"/><circle r="6" cx="222" cy="376"/><circle r="6" cx="186" cy="392"/><circle r="6" cx="560" cy="430"/><circle r="6" cx="582" cy="444"/><circle r="6" cx="548" cy="452"/></g>
-      ${L(190, 348, 'Ribosomes', 'middle')}
+    <g class="nolabels">
+      <circle cx="430" cy="332" r="246" fill="url(#c-shell)"/>
+      <circle cx="430" cy="332" r="240" fill="none" stroke="#ffffff" stroke-width="3" opacity=".45"/>
+      <ellipse cx="352" cy="228" rx="120" ry="78" fill="#ffffff" opacity=".32" filter="url(#c-blur)"/>
+      <ellipse cx="300" cy="196" rx="34" ry="20" fill="#ffffff" opacity=".62" filter="url(#c-blur)"/>
     </g>
+    <g class="part" data-part="cell-membrane"><circle cx="430" cy="332" r="245" fill="none" stroke="#5aa7cc" stroke-width="7" opacity=".55"/></g>
 
-    <!-- lysosome -->
-    <g class="part cat-cleanup" data-part="lysosome">
-      <circle class="shape" cx="180" cy="250" r="30"/>
-      <g class="dots"><circle r="3" cx="172" cy="244"/><circle r="3" cx="186" cy="250"/><circle r="3" cx="178" cy="258"/></g>
-      ${L(180, 300, 'Lysosome')}
-    </g>
-
-    <!-- vacuole -->
-    <g class="part cat-storage" data-part="vacuole">
-      <circle class="shape" cx="660" cy="404" r="46"/>
-      <circle class="shape hollow inner" cx="660" cy="404" r="38"/>
-      ${L(660, 470, 'Vacuole')}
-    </g>
-
-    <!-- centrosome -->
-    <g class="part cat-structure" data-part="centrosome">
-      <rect class="shape" x="236" y="150" width="30" height="12" rx="3"/>
-      <rect class="shape" x="248" y="166" width="12" height="30" rx="3"/>
-      ${L(196, 150, 'Centrosome', 'end')}
+    <g class="nolabels">
+      <line class="lead-nat" x1="154" y1="130" x2="250" y2="196"/><circle class="pin-nat" cx="250" cy="196" r="3.4"/><text class="plabel" x="150" y="134" text-anchor="end">Centrioles</text>
+      <line class="lead-nat" x1="154" y1="205" x2="232" y2="252"/><circle class="pin-nat" cx="232" cy="252" r="3.4"/><text class="plabel" x="150" y="209" text-anchor="end">Lysosome</text>
+      <line class="lead-nat" x1="154" y1="285" x2="368" y2="288"/><circle class="pin-nat" cx="368" cy="288" r="3.4"/><text class="plabel" x="150" y="289" text-anchor="end">Nucleus</text>
+      <line class="lead-nat" x1="154" y1="365" x2="330" y2="372"/><circle class="pin-nat" cx="330" cy="372" r="3.4"/><text class="plabel" x="150" y="369" text-anchor="end">Rough ER</text>
+      <line class="lead-nat" x1="154" y1="500" x2="316" y2="500"/><circle class="pin-nat" cx="316" cy="500" r="3.4"/><text class="plabel" x="150" y="504" text-anchor="end">Golgi apparatus</text>
+      <line class="lead-nat" x1="154" y1="430" x2="360" y2="430"/><circle class="pin-nat" cx="360" cy="430" r="3.4"/><text class="plabel" x="150" y="434" text-anchor="end">Cytoplasm</text>
+      <line class="lead-nat" x1="726" y1="130" x2="672" y2="300"/><circle class="pin-nat" cx="672" cy="300" r="3.4"/><text class="plabel" x="730" y="134" text-anchor="start">Cell membrane</text>
+      <line class="lead-nat" x1="726" y1="210" x2="574" y2="216"/><circle class="pin-nat" cx="574" cy="216" r="3.4"/><text class="plabel" x="730" y="214" text-anchor="start">Mitochondrion</text>
+      <line class="lead-nat" x1="726" y1="292" x2="490" y2="356"/><circle class="pin-nat" cx="490" cy="356" r="3.4"/><text class="plabel" x="730" y="296" text-anchor="start">Nucleolus</text>
+      <line class="lead-nat" x1="726" y1="360" x2="608" y2="346"/><circle class="pin-nat" cx="608" cy="346" r="3.4"/><text class="plabel" x="730" y="364" text-anchor="start">Smooth ER</text>
+      <line class="lead-nat" x1="726" y1="430" x2="666" y2="416"/><circle class="pin-nat" cx="666" cy="416" r="3.4"/><text class="plabel" x="730" y="434" text-anchor="start">Vacuole</text>
+      <line class="lead-nat" x1="726" y1="500" x2="528" y2="478"/><circle class="pin-nat" cx="528" cy="478" r="3.4"/><text class="plabel" x="730" y="504" text-anchor="start">Ribosomes</text>
     </g>
   </svg>`;
 
@@ -184,6 +167,6 @@
       control: 'Control', energy: 'Energy', manufacturing: 'Manufacturing',
       storage: 'Storage', cleanup: 'Cleanup', structure: 'Structure'
     },
-    viewBox: '0 0 840 600', svg, parts, quizzes
+    viewBox: '0 0 880 660', svg, parts, quizzes
   };
 })();
