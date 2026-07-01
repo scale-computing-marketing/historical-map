@@ -1,48 +1,80 @@
-# Historical Wars Explorer
+# Learning Atlas
 
-An interactive, museum-quality atlas for understanding wars throughout history. It answers **“what did the world look like in this year?”** rather than “where was this battle?” — showing a war as one layer inside a living historical world you can scrub through year by year.
+An interactive, museum-quality **educational hub**. Each subject is explored the way it's best understood — history as a living map you scrub through year by year, biology as diagrams and interactive models you click into — all sharing one design language and one set of reusable UI.
 
-It ships with three conflicts you can switch between from the **War** menu — the **American Revolutionary War (1775–1783)** (the reference implementation), the **American Civil War (1861–1865)**, and **World War I (1914–1918)** — and is built so any further war is added as data, not code.
+Two subjects are live today:
+
+- **🗺️ History — Historical Wars Explorer.** Six conflicts (French & Indian War → World War II) with animated borders, battles, leaders and treaties on an interactive world map. Answers *“what did the world look like in this year?”* rather than *“where was this battle?”*
+- **🧬 Biology — Life Explorer.** Four topics — the Animal Cell, the Tree of Life, the Human Body, and an interactive Genetics (Punnett square) tool — as clickable diagrams and models.
+
+More subjects (Mathematics, English, Chemistry, Geography) are scaffolded on the hub as *coming soon*.
 
 ## Run it
 
-It's a static site — no build step.
+It's a **static site — no build step, no dependencies to install.**
 
-- **Easiest:** open it served over HTTP. From this folder:
-  ```sh
-  python3 -m http.server 8000
-  # then visit http://localhost:8000/
-  ```
-- **GitHub Pages:** enable Pages on this repo (Settings → Pages → deploy from `main` / root) and it will be served automatically.
-- Opening `index.html` directly from a full local clone (`file://`) also works, as long as the `app/` folder is alongside it.
+```sh
+# from the repo root
+python3 -m http.server 8000
+# then visit http://localhost:8000/
+```
 
-It needs an internet connection: the historical basemap and the D3 libraries load from public CDNs.
+`python3 -m http.server` (and GitHub Pages) automatically serve `index.html` for a directory URL, so the hub's links to `subjects/history/` and `subjects/biology/` just work. To publish, enable **GitHub Pages** (Settings → Pages → deploy from `main` / root).
 
-## What's here
+Opening an individual page directly from a clone over `file://` also works (e.g. `subjects/biology/index.html`); only the hub's directory-style card links need an HTTP server. An internet connection is required — map basemaps and the D3 libraries load from public CDNs.
 
-| Path | What it is |
-|------|------------|
-| `index.html` | The application shell. |
-| `app/styles.css` | Atlas styling (light + dark). |
-| `app/engine.js` | **War-agnostic** engine — the Temporal Resolver, search, quiz logic. Knows nothing about any specific war. |
-| `app/app.js` | Presentation — map rendering, timeline, panels, state synchronization. |
-| `app/data/american-revolution.js` | The Revolutionary War, as pure data. |
-| `app/data/american-civil-war.js` | The Civil War, as pure data (US-state geometry, Union/Confederacy/border factions). |
-| `app/data/world-war-1.js` | World War I, as pure data (1914 world basemap, Allied/Central/neutral factions). |
-| `DESIGN.md` | The full design & architecture document, in Markdown (readable on GitHub, diff-friendly). |
-| `design-document.html` | The same document, richly formatted with wireframes and a live embedded reference map (open in a browser). |
+## Repository structure
+
+```
+index.html              Hub home — the subject cards
+core/
+  theme.css             Shared design system: tokens (light/dark), top bar,
+                        info rail, tabs, cards, quiz modal
+  shell.js              Shared UI widgets: Atlas.Rail, Atlas.Quiz, menus, search
+subjects/
+  history/              Historical Wars Explorer (self-contained)
+    index.html
+    app/                engine.js, app.js, styles.css, data/<war>.js
+  biology/              Life Explorer (self-contained)
+    index.html
+    explorer.js         Renders diagram + tool topics; composes the Atlas shell
+    styles.css          Biology-specific styles (diagrams, Punnett tool)
+    data/<topic>.js     cell, tree-of-life, body-systems, genetics
+DESIGN.md               Design & architecture of the History subject
+```
 
 ## Architecture in one idea
 
-**Data is fully separated from a war-agnostic engine.** Adding a war means dropping in another `app/data/<war>.js` file (and one `<script>` tag) shaped like `american-revolution.js` — no changes to the engine or the app. Each war supplies its own factions, side labels, map geometry, and projection, so the Civil War colors US *states* by allegiance while the Revolution and World War I color *world* polities, all through the same engine. A war can ship **multiple border snapshots** that swap as you cross a year boundary: scrubbing the WWI timeline shifts the alliances (Italy joins in 1915, the US in 1917, Russia drops out after its 1917 revolution) and, at 1918, swaps to the post-war boundaries so the empires' collapse is visible. Entities exist once; their facts carry validity intervals, sources, and confidence, and are resolved for the selected year (e.g. France reads *“not involved”* in 1776 but *“active belligerent”* in 1778).
+**A hub shell + a shared core + self-contained subject modules.**
 
-Rendering uses [D3-geo](https://github.com/d3/d3-geo) (Robinson projection by default) over period basemaps. The Civil War uses modern US-state outlines as a labeled teaching approximation.
+Everything subject-agnostic lives in [`core/`](core): the design tokens and the reusable UI (`core/theme.css`), and the framework-free widgets (`core/shell.js`) — a sliding info **Rail**, a **Quiz** modal, dropdown menus and search. Each subject under [`subjects/`](subjects) brings its own *canvas* (history's is a D3 map; biology's is a diagram/tool explorer) but composes those shared pieces, so every subject looks and behaves like part of one Atlas.
 
-## Status
+Within a subject, **content is data, not code.** A war is a `subjects/history/app/data/<war>.js` file that registers on `window.HWE.wars`; a biology topic is a `subjects/biology/data/<topic>.js` file that registers on `window.BIO.topics`. Adding content is a data change — no engine edits.
 
-Phase 1 (reference implementation) — working: year-driven map, four layers, seven info tabs, “world at this time,” search, and quizzes. The **second and third conflicts (Civil War, World War I)** land the design doc's Phase 3 goal — wars added by data alone. Known simplifications (sparse border snapshots — WWI uses 1914 borders through 1917 and the post-war 1920 boundaries for 1918; modern US-state outlines for the Civil War; curated world-context; deferred mobile polish) are documented in the design document and surfaced in-app.
+## One repo, on purpose
+
+The whole Atlas lives in **a single repository (a monorepo).** For a buildless static site with a shared core, that's the sweet spot:
+
+- The core stays **trivially shared** — subjects just link `../../core/…`; no versioning, submodules or publish step to keep in sync.
+- Changes are **atomic** — update the design system and every subject in one commit, so nothing drifts.
+- It's **one deploy, one URL** — hub → subject links are plain relative paths.
+
+### Conventions that keep it healthy at scale
+
+1. **Subject isolation.** A subject depends only on `core/`, never on another subject. This keeps things comprehensible *and* makes a future `git filter-repo` extraction clean if one subject ever needs its own repo.
+2. **Content is small, per-item, lazy-loaded.** One data file per war/topic; a visitor loads only the subject they open, so repo growth never affects page weight.
+3. **Heavy assets by URL, not committed.** The real bloat risk in a content site is binaries, not text. Reference large images/audio/video/datasets from a CDN or object store (as the history basemaps already load from jsdelivr); if an asset must be versioned, use **git-LFS** so it stays out of normal history. This keeps the repo lean no matter how many subjects are added.
+
+## How to extend it
+
+**Add a topic to Biology** — create `subjects/biology/data/<topic>.js` that registers on `window.BIO.topics`, then add its `<script>` tag in `subjects/biology/index.html`. Two kinds are supported:
+
+- `kind:'diagram'` — supply an SVG whose elements carry `data-part` attributes plus a `parts` array; the explorer wires clicks to the info rail automatically.
+- `kind:'tool'` — supply a `mount(canvas, api)` function for a custom interactive (as the Genetics Punnett square does).
+
+**Add a new subject** — create `subjects/<name>/` with an `index.html` that links `../../core/theme.css` and `../../core/shell.js`, build its explorer against the Atlas shell, and add a card on the hub home. (Once a third subject lands, the hub renders its cards from a `subjects.json` manifest, so this becomes a one-entry change.)
 
 ## Credits & sources
 
-- Basemap geometry: [Natural Earth](https://www.naturalearthdata.com/) (public domain) and [aourednik/historical-basemaps](https://github.com/aourednik/historical-basemaps) (`world_1783`, `world_1914`); US-state outlines from [PublicaMundi/MappingAPI](https://github.com/PublicaMundi/MappingAPI) (US Census-derived) for the Civil War.
-- Historical content is sourced; see the **Sources** tab in the app and the design document. Where historians disagree, ranges and confidence levels are shown rather than invented precision.
+- **History** basemap geometry: [Natural Earth](https://www.naturalearthdata.com/) (public domain) and [aourednik/historical-basemaps](https://github.com/aourednik/historical-basemaps); US-state outlines (Civil War) from US Census-derived data. Historical content is sourced — see each war's **Sources** tab and [`DESIGN.md`](DESIGN.md). Where historians disagree, ranges and confidence levels are shown rather than invented precision.
+- **Biology** diagrams are original schematic illustrations built for clarity, not anatomical precision.

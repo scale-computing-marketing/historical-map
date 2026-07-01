@@ -2,6 +2,14 @@
 
 **Design & Architecture Document · v1**
 
+> **Context.** This document describes the **History** subject (the *Historical Wars Explorer*)
+> within the broader **Learning Atlas** hub. The Atlas is a single-repository, buildless
+> educational site: a shared design system and reusable UI live in [`core/`](core), and each
+> subject is a self-contained module under [`subjects/`](subjects) that composes them. History
+> lives at [`subjects/history/`](subjects/history); see the [README](README.md) for the hub
+> structure and conventions. Everything below is the design of the History subject specifically —
+> its map, temporal model, and data schema.
+
 > This is the Markdown edition of the design document. A richly formatted version with
 > wireframes and an embedded live reference map lives in
 > [`design-document.html`](design-document.html) (open it in a browser). The two are kept
@@ -384,9 +392,14 @@ historical-wars-explorer/
 The boundary that matters: `packages/engine` must never `import` from `data/`. Datasets flow in
 through the loader; the engine stays a pure function of its inputs.
 
-> Note: the current working prototype in this repo uses a flatter, build-step-free layout
-> (`index.html` + `app/`). The structure above is the target architecture the prototype grows
-> into.
+> Note: the structure above is an aspirational (Next.js + packages) target. The **current** repo
+> is intentionally build-step-free. Within the Learning Atlas hub, the History subject lives at
+> [`subjects/history/`](subjects/history) — `index.html` plus an `app/` folder holding
+> `engine.js` (the war-agnostic core), `app.js` (presentation), `styles.css`, and
+> `data/<war>.js` datasets — and shares the hub's design system and UI widgets from
+> [`core/`](core). The engine-never-imports-data boundary still holds: datasets register
+> themselves on `window.HWE.wars` and flow into the engine as inputs. See the
+> [README](README.md) for the full hub layout.
 
 ---
 
