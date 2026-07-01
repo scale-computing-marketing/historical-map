@@ -8,6 +8,9 @@
   --m-good:#3fae5a; --m-good-bg:rgba(63,174,90,.14);
   --m-bad:#d15a52; --m-bad-bg:rgba(209,90,82,.12);
   --m-panel:#fffdf8; --m-line:rgba(43,38,32,.14);
+  /* subject chrome hue for the shared shell */
+  --brand:var(--m-accent); --brand-ink:var(--m-accent-ink);
+  --brand-weak:rgba(79,107,237,.10); --brand-ring:rgba(79,107,237,.20);
   /* strand colours (map node accents) */
   --s-number:#4f6bed; --s-operations:#3fae8f; --s-geometry:#e8912f;
   --s-measurement:#c99a2e; --s-fractions:#d94f8a; --s-data:#8b5cd6;
@@ -33,15 +36,51 @@
 .m-btn.tiny{padding:4px 10px;font-size:15px;border-radius:8px}
 
 /* =============================================================== MAP ===== */
-.m-map-scroll{position:absolute;inset:0;overflow:auto;background:
+.m-map-host{position:absolute;inset:0}
+/* focus mode: one grade as a compact dependency graph, centred, fit-to-screen */
+.m-map-scroll{position:absolute;inset:0;overflow:auto;overscroll-behavior:contain;
+  display:grid;place-items:center;background:
   radial-gradient(circle at 1px 1px, var(--m-line) 1px, transparent 0) 0 0/26px 26px, var(--page)}
+.m-map-host.is-overview .m-map-scroll{display:none}
 .m-map-inner{position:relative}
 .m-map-edges{position:absolute;top:0;left:0;pointer-events:none;overflow:visible}
 .m-edge{fill:none;stroke:var(--rule2);stroke-width:2;stroke-dasharray:4 5;opacity:.5}
 .m-edge.met{stroke:var(--m-accent);stroke-dasharray:none;opacity:.7;stroke-width:2.5}
-.m-col-head{position:absolute;top:12px;font-family:var(--ui);width:176px;text-align:center}
-.m-col-g{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
-  color:var(--muted);background:var(--panel);border:1px solid var(--rule);border-radius:20px;padding:4px 12px}
+
+/* overview mode: every grade as a progress card */
+.m-overview{position:absolute;inset:0;display:none;padding:var(--sp-6);overflow-y:auto;
+  grid-template-columns:repeat(auto-fill,minmax(226px,1fr));gap:var(--sp-4);align-content:start;
+  background:var(--page)}
+.m-map-host.is-overview .m-overview{display:grid}
+.m-ucard{text-align:left;background:var(--panel);border:1px solid var(--rule);border-radius:var(--r-xl);
+  padding:var(--sp-4);font-family:var(--serif);height:max-content;
+  transition:transform var(--dur-2) var(--ease-out),box-shadow var(--dur-2) var(--ease),border-color var(--dur-2) var(--ease)}
+.m-ucard:hover{transform:translateY(-3px);box-shadow:var(--sh-3);border-color:var(--m-accent)}
+.m-ucard-top{display:flex;align-items:center;gap:var(--sp-2);margin-bottom:4px}
+.m-ucard-top h3{font-size:var(--fs-lg);margin:0;flex:1}
+.m-ucard-meta{font-family:var(--ui);font-size:var(--fs-sm);color:var(--muted);margin-bottom:12px}
+.m-ucard-mini{display:flex;gap:4px;margin-bottom:12px}
+.m-ucard-mini i{flex:1;height:6px;border-radius:var(--r-pill);background:var(--panel2)}
+.m-ucard-mini i.on{background:var(--m-good)}
+.m-ucard-mini i.cur{background:var(--m-accent)}
+.m-ucard-foot{display:flex;align-items:center;gap:var(--sp-2);font-family:var(--ui);font-size:var(--fs-sm);color:var(--muted)}
+
+.m-node{position:absolute;text-align:left;background:var(--panel);border:1.5px solid var(--rule2);
+  border-radius:14px;padding:9px 12px;display:flex;flex-direction:column;gap:3px;overflow:hidden;
+  border-left-width:5px;transition:transform .12s ease, box-shadow .12s ease;font-family:var(--serif)}
+.m-node:hover{transform:translateY(-2px);box-shadow:0 8px 22px rgba(0,0,0,.14)}
+.m-node .m-node-top{display:flex;align-items:center;gap:6px}
+.m-node .m-node-name{font-weight:600;font-size:14px;line-height:1.15;flex:1}
+.m-node .m-node-blurb{font-family:var(--ui);font-size:11px;color:var(--muted);line-height:1.3;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.m-node-lock{font-size:13px;opacity:.7}
+.m-node-badge{position:absolute;top:7px;right:9px;font-family:var(--ui);font-size:11px;color:var(--muted)}
+.m-node-stars{position:absolute;bottom:6px;right:9px;font-size:10px;letter-spacing:-1px;color:var(--rule2)}
+.m-node-stars .on{color:var(--m-2)}
+/* strand accent on the left border */
+.m-node.strand-number{border-left-color:var(--s-number)}
+.m-node.strand-operations{border-left-color:var(--s-operations)}
+.m-node.strand-geometry{border-left-color:var(--s-geometry)}
 
 .m-node{position:absolute;text-align:left;background:var(--panel);border:1.5px solid var(--rule2);
   border-radius:14px;padding:9px 12px;display:flex;flex-direction:column;gap:3px;overflow:hidden;
