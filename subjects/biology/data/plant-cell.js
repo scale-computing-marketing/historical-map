@@ -1,8 +1,9 @@
-/* Life Explorer — topic: the Plant Cell in 3-D.
-   A `kind:'embed'` topic embedding a CC-BY plant-cell model from Sketchfab. The
-   info rail carries a plant-cell glossary (with the structures a plant cell has
-   that an animal cell doesn't — a cell wall, chloroplasts and a big central
-   vacuole) plus quizzes. Roles reuse the shared category colours.             */
+/* Life Explorer — topic: the Plant Cell (interactive, owned model).
+   A `kind:'model3d'` topic rendering a licensed GLB (converted from a purchased
+   CGTrader model) with Google <model-viewer> and clickable hotspots wired to the
+   info rail. Self-contained: 19-organelle glossary, quizzes and hotspots.
+   The .glb is committed so GitHub Pages can serve it (used in-app under the
+   model's royalty-free licence; the raw source files stay gitignored).         */
 (function () {
   window.BIO = window.BIO || { topics: {} };
 
@@ -56,7 +57,7 @@
       summary: 'A stack of flattened sacs that packages and ships proteins.',
       functions: ['Sorts and packages proteins', 'Ships products in vesicles'],
       facts: [['Shape', 'Stacked flattened sacs']],
-      analogy: 'The cell’s post office.', related: ['rough-er'] },
+      analogy: 'The cell’s post office.', related: ['rough-er', 'vesicle'] },
     { id: 'ribosomes', name: 'Ribosomes', category: 'manufacturing',
       summary: 'Tiny machines that build proteins from amino acids.',
       functions: ['Read genetic instructions', 'Assemble proteins'],
@@ -115,20 +116,37 @@
       feedback: { correct: 'Correct — chloroplasts are unique to plants (and algae).', incorrect: 'Which one does photosynthesis?' } },
   ];
 
-  window.BIO.topics['plant-cell-3d'] = {
-    id: 'plant-cell-3d', name: 'Plant Cell (3-D)', short: 'Plant Cell', kind: 'embed', icon: '🌱', hideLegend: true,
-    tagline: 'Cell wall, chloroplasts & a big vacuole',
-    intro: 'A plant cell has everything an animal cell has — plus a rigid cell wall, green chloroplasts for photosynthesis, and one large central vacuole. Drag to rotate the model; open the Parts tab to explore each structure.',
-    embedSrc: 'https://sketchfab.com/models/7fe3ac29756a45c6b678804a8da8a760/embed?autostart=1&ui_theme=dark&ui_hint=0',
-    embedTitle: 'Plant CELL',
-    credit: {
-      text: 'Plant CELL', author: 'NaraXR', license: 'CC BY-NC',
-      authorUrl: 'https://sketchfab.com/naratech',
-      modelUrl: 'https://sketchfab.com/3d-models/plant-cell-7fe3ac29756a45c6b678804a8da8a760'
-    },
-    categories: {
-      control: 'Control', energy: 'Energy', manufacturing: 'Manufacturing', storage: 'Storage', structure: 'Structure', cleanup: 'Cleanup'
-    },
+  window.BIO.topics['plant-cell'] = {
+    id: 'plant-cell', name: 'Plant Cell', short: 'Plant Cell', kind: 'model3d',
+    icon: '🌿', hideLegend: true, autoRotate: false, tagline: 'An interactive 3-D plant cell',
+    intro: 'A real 3-D plant cell you can rotate and zoom. Click any marker to open that structure’s details in the panel. Model licensed from CGTrader.',
+    modelSrc: 'assets/plant-cell.glb',
+    credit: { text: 'Plant Cell', author: 'licensed via CGTrader', license: '', modelUrl: 'https://www.cgtrader.com/3d-models/science/medical/plant-cell-14840ad4-6392-41e2-a51d-e89d6e8e5b6d' },
+    // Positions captured from the model's 19 named organelle objects (OBJ
+    // centroids; OBJ coords map 1:1 to model space). normal "0 1 0" reads from
+    // the cutaway top; "0 0 1" reads a structure from the front/side.
+    hotspots: [
+      { partId: 'cell-wall', position: '0.0 -0.16 0.50', normal: '0 0 1' },
+      { partId: 'cell-membrane', position: '0.34 0.05 0.30', normal: '0 1 0' },
+      { partId: 'cytoplasm', position: '0.16 0.03 -0.16', normal: '0 1 0' },
+      { partId: 'nucleus', position: '-0.20 0.16 -0.70', normal: '0 1 0' },
+      { partId: 'nuclear-envelope', position: '0.02 0.15 -0.63', normal: '0 0 1' },
+      { partId: 'nucleoplasm', position: '-0.068 0.11 -0.66', normal: '0 1 0' },
+      { partId: 'nucleolus', position: '-0.066 0.08 -0.74', normal: '0 1 0' },
+      { partId: 'vacuole', position: '0.233 0.08 0.111', normal: '0 1 0' },
+      { partId: 'chloroplast', position: '0.542 0.09 0.248', normal: '0 1 0' },
+      { partId: 'mitochondria', position: '0.270 0.03 0.462', normal: '0 1 0' },
+      { partId: 'golgi', position: '-0.275 0.07 0.312', normal: '0 1 0' },
+      { partId: 'rough-er', position: '-0.128 0.08 -0.40', normal: '0 1 0' },
+      { partId: 'smooth-er', position: '0.356 0.05 -0.84', normal: '0 1 0' },
+      { partId: 'ribosomes', position: '0.046 0.03 -0.078', normal: '0 1 0' },
+      { partId: 'peroxisome', position: '0.572 0.03 0.060', normal: '0 1 0' },
+      { partId: 'lysosome', position: '-0.315 0.03 0.056', normal: '0 1 0' },
+      { partId: 'vesicle', position: '0.527 0.03 -0.015', normal: '0 1 0' },
+      { partId: 'cytoskeleton', position: '0.553 0.02 -0.103', normal: '0 1 0' },
+      { partId: 'plasmodesmata', position: '0.70 -0.28 0.11', normal: '0 0 1' }
+    ],
+    categories: { control: 'Control', energy: 'Energy', manufacturing: 'Manufacturing', storage: 'Storage', structure: 'Structure', cleanup: 'Cleanup' },
     parts, quizzes
   };
 })();
