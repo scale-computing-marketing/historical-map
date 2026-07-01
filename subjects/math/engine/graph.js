@@ -39,7 +39,28 @@
   function get(id) { return byId[id] || null; }
   function all() { return order.map(id => byId[id]); }
 
-  function prereqsMet(c) { return (c.prereqs || []).every(p => Store.isMastered(p)); }
+  /* Dev/testing flag: "unlock all". When on, every concept's prerequisites are
+     treated as met, so nothing is 'locked' and any authored lesson can be opened
+     regardless of grade or progress. Off by default (normal learners keep the
+     prereq gating). Turn on by visiting the page with ?unlock (or #unlock) in the
+     URL, or from the console with MATH.Graph.setUnlockAll(true). It's persisted
+     in localStorage so it survives reloads until you setUnlockAll(false).       */
+  function readUnlockFlag() {
+    try {
+      if (/[?&#]unlock(all)?\b/i.test(location.href)) { localStorage.setItem('atlas.math.unlockAll', '1'); return true; }
+      return localStorage.getItem('atlas.math.unlockAll') === '1';
+    } catch (e) { return /[?&#]unlock(all)?\b/i.test(location.href || ''); }
+  }
+  let UNLOCK_ALL = readUnlockFlag();
+  function setUnlockAll(on) {
+    UNLOCK_ALL = !!on;
+    try { localStorage.setItem('atlas.math.unlockAll', on ? '1' : '0'); } catch (e) {}
+    /* Nudge subscribers (the map) to re-render so locks light up / relock live. */
+    if (Store && Store.flushActivity) Store.flushActivity();
+    return UNLOCK_ALL;
+  }
+
+  function prereqsMet(c) { return UNLOCK_ALL || (c.prereqs || []).every(p => Store.isMastered(p)); }
 
   function status(id) {
     const c = byId[id]; if (!c) return 'locked';
@@ -83,5 +104,5 @@
       .map(c => ({ id: c.id, label: c.name, sub: 'Grade ' + c.grade + ' · ' + c.strand }));
   }
 
-  MATH.Graph = { GRADES, add, get, all, status, prereqsMet, unlockedBy, children, recommended, remediationFor, search };
+  MATH.Graph = { GRADES, add, get, all, status, prereqsMet, unlockedBy, children, recommended, remediationFor, search, setUnlockAll };
 })();

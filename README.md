@@ -4,9 +4,9 @@ An interactive, museum-quality **educational hub**. Each subject is explored the
 
 Three subjects are live today:
 
-- **🗺️ History — Historical Wars Explorer.** Six conflicts (French & Indian War → World War II) with animated borders, battles, leaders and treaties on an interactive world map. Answers *“what did the world look like in this year?”* rather than *“where was this battle?”*
+- **🗺️ History — Historical Wars Explorer.** Eight conflicts (French & Indian War → the Cold War) with animated borders, battles, leaders and treaties on an interactive world map. Answers *“what did the world look like in this year?”* rather than *“where was this battle?”*
 - **🧬 Biology — Life Explorer.** Four topics — the Animal Cell, the Tree of Life, the Human Body, and an interactive Genetics (Punnett square) tool — as clickable diagrams and models.
-- **➗ Mathematics — Math Explorer.** A *knowledge map* from Kindergarten to Calculus: 37 interconnected concepts where mastering one unlocks the next. 18 concepts have full interactive lessons (counting, comparing, patterns, shapes, ten-frame addition, number lines, place value, skip counting, arrays, fractions, multiplication, area, the coordinate plane, integers, function machines…), each following an *explore → discover → practice → challenge → master* flow with 12 reusable manipulatives, star-based mastery and progress tracking.
+- **➗ Mathematics — Math Explorer.** A *knowledge map* from Kindergarten to Calculus: 37 interconnected concepts where mastering one unlocks the next. 18 concepts have full interactive lessons (counting, comparing, patterns, shapes, ten-frame addition, number lines, place value, skip counting, arrays, fractions, multiplication, area, the coordinate plane, integers, function machines…), each following an *explore → discover → practice → challenge → master* flow with 14 reusable manipulatives — including **Montessori materials** (number rods, golden beads with number cards, drag-and-drop sorting and a three-period naming activity) — plus star-based mastery and progress tracking.
 
 More subjects (English, Chemistry, Geography) are scaffolded on the hub as *coming soon*.
 
