@@ -9,10 +9,10 @@
 
   reg({
     concept: 'count-10', title: 'Counting to 10',
-    hook: { emoji: '🍪', text: 'How many cookies are on the table?', sub: 'Tap each one — no counting in your head!' },
+    hook: { emoji: '🍪', text: 'How many cookies are on the table?', sub: 'And is a longer row always more?' },
     steps: [
-      { kind: 'explore', title: 'Count by touching', intro: 'Tap each cookie once as you count.', component: 'counter', config: { emoji: '🍪', min: 3, max: 6, rounds: 3 } },
-      { kind: 'discover', title: 'You just counted!', text: 'You touched each cookie <b>once</b> and said <b>one number</b> for each. The last number you say is how many there are. That is counting.' },
+      { kind: 'explore', title: 'Meet the number rods', intro: 'Longer rods hold more. Find each length by counting its red and blue parts.', component: 'numberRods', config: { mode: 'identify', max: 10, rounds: 3 } },
+      { kind: 'discover', title: 'Number is amount', text: 'Each rod is one part longer than the last. Whether you count parts on a rod or objects on a table, the <b>last number you say is how many</b> — that is counting.' },
       { kind: 'practice', difficulty: 'easy', title: 'Count the turtles', component: 'counter', config: { emoji: '🐢', min: 4, max: 8, rounds: 3 } },
       { kind: 'challenge', difficulty: 'challenge', title: 'Bigger groups', intro: 'Now count all the way up to 10.', component: 'counter', config: { emoji: '⭐', min: 7, max: 10, rounds: 3 } },
       { kind: 'mastery', title: 'How many?', intro: 'Look and tell how many — quick as you can.', component: 'problemSet',
@@ -49,10 +49,10 @@
     concept: 'shapes-2d', title: '2D Shapes',
     hook: { emoji: '🔺', text: 'Which of these is a triangle?', sub: 'Look at the sides and corners.' },
     steps: [
-      { kind: 'explore', title: 'Sort the shapes', component: 'shapeSort', config: { rounds: 6, kinds: ['circle', 'square', 'triangle'] } },
+      { kind: 'explore', title: 'Meet the shapes', intro: 'First learn their names, then prove you know them.', component: 'threePeriod', config: { items: [{ id: 'circle', label: 'circle', shape: 'circle' }, { id: 'square', label: 'square', shape: 'square' }, { id: 'triangle', label: 'triangle', shape: 'triangle' }] } },
       { kind: 'discover', title: 'Shapes have names', text: 'We name flat shapes by their <b>sides</b>. A <b>triangle</b> has 3 sides, a <b>square</b> has 4 equal sides, and a <b>circle</b> has no sides at all — it is perfectly round.' },
-      { kind: 'practice', difficulty: 'easy', title: 'More shapes', component: 'shapeSort', config: { rounds: 6, kinds: ['circle', 'square', 'triangle', 'star'] } },
-      { kind: 'challenge', difficulty: 'challenge', title: 'Every shape', component: 'shapeSort', config: { rounds: 8, kinds: ['circle', 'square', 'triangle', 'star', 'hexagon', 'diamond'] } },
+      { kind: 'practice', difficulty: 'easy', title: 'Sort the shapes', component: 'shapeSort', config: { kinds: ['circle', 'square', 'triangle', 'star'], perKind: 2 } },
+      { kind: 'challenge', difficulty: 'challenge', title: 'Every shape', component: 'shapeSort', config: { kinds: ['circle', 'square', 'triangle', 'star', 'hexagon', 'diamond'], perKind: 2 } },
       { kind: 'mastery', title: 'Know your shapes', component: 'problemSet',
         config: { problems: [
           { prompt: 'How many sides does a <b>triangle</b> have?', answer: '3', choices: ['2', '3', '4'], hint: 'Tri- means three.' },
@@ -67,8 +67,8 @@
     concept: 'add-10', title: 'Adding within 10',
     hook: { emoji: '🍎', text: 'You have 3 apples and get 2 more.', sub: 'How many apples do you have now?' },
     steps: [
-      { kind: 'explore', title: 'Put the groups together', intro: 'Fill each frame, then count them all.', component: 'tenFrame', config: { mode: 'add', rounds: 3 } },
-      { kind: 'discover', title: 'That is addition', text: 'Adding means putting groups <b>together</b> and counting them all. When you joined 3 and 2 you got 5: we write <b>3 + 2 = 5</b>.' },
+      { kind: 'explore', title: 'Join two rods', intro: 'Lay one rod after another — where do they reach?', component: 'numberRods', config: { mode: 'add', max: 10, rounds: 3 } },
+      { kind: 'discover', title: 'That is addition', text: 'Adding means joining two amounts and measuring the whole. Laying a rod of 3 and a rod of 2 end-to-end reaches 5: we write <b>3 + 2 = 5</b>.' },
       { kind: 'practice', difficulty: 'easy', title: 'Fill the frames', component: 'tenFrame', config: { mode: 'add', rounds: 3 } },
       { kind: 'challenge', difficulty: 'challenge', title: 'Add in your head', component: 'problemSet',
         config: { generate() { return U.range(4).map(() => { const a = U.rand(2, 6), b = U.rand(2, 10 - a); return { prompt: `<b class="m-big">${a} + ${b} = ?</b>`, answer: a + b, hint: 'Count on from the bigger number.' }; }); } } },

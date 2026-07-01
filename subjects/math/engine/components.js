@@ -246,26 +246,91 @@
   } });
 
   /* ============================================================ SHAPE SORT ===
-     Tap a shape, then tap the bin it belongs in (by name). config: { rounds } */
+     Montessori-style sorting work: a tray of shapes to drag into the basket that
+     matches (classification + control of error — a wrong drop springs back).
+     Drag with pointer/touch, or tap a shape then tap a basket (keyboard-friendly).
+     config: { kinds:[…], perKind, rounds }                                     */
+  const SHAPE_COLOR = { circle: 'accent', square: '2', triangle: '4', star: '3', diamond: 'accent', hexagon: '2', pentagon: '3', rectangle: '4' };
   R('shapeSort', { title: 'Sort the shapes', mount(host, cfg, ctx) {
-    const KINDS = cfg && cfg.kinds ? cfg.kinds : ['circle', 'square', 'triangle', 'star'];
-    cfg = Object.assign({ rounds: 6 }, cfg);
-    let round = 0, sel = null;
-    const info = U.el('p', 'm-prompt', 'Tap a shape, then tap the matching bin.'); host.appendChild(info);
-    const tray = U.el('div', 'm-tray'); host.appendChild(tray);
-    const bins = U.el('div', 'm-bins'); host.appendChild(bins);
-    bins.innerHTML = KINDS.map(k => `<button class="m-bin" data-k="${k}">${U.shape(k, 'var(--m-faint)')}<span>${k}</span></button>`).join('');
-    function newRound() {
-      const k = U.pick(KINDS); sel = k;
-      tray.innerHTML = `<button class="m-tray-shape" data-k="${k}">${U.shape(k)}</button>`;
-      tray.querySelector('.m-tray-shape').classList.add('picked');
+    const KINDS = (cfg && cfg.kinds) || ['circle', 'square', 'triangle'];
+    cfg = Object.assign({ perKind: 2, rounds: 1 }, cfg);
+    let round = 0, total = 0, sorted = 0, selected = null;
+    const info = U.el('p', 'm-prompt', 'Drag each shape into the basket with its name. (Or tap a shape, then tap a basket.)'); host.appendChild(info);
+    const wrap = U.el('div', 'm-sort'); host.appendChild(wrap);
+    const tray = U.el('div', 'm-sort-tray'); wrap.appendChild(tray);
+    const bins = U.el('div', 'm-sort-bins'); wrap.appendChild(bins);
+    bins.innerHTML = KINDS.map(k => `<div class="m-bin" data-k="${k}" role="button" tabindex="0" aria-label="${k} basket">
+      ${U.shape(k, 'var(--m-faint)')}<span class="m-bin-name">${k}</span><span class="m-bin-count" data-c="${k}">0</span></div>`).join('');
+
+    const cap = s => s.charAt(0).toUpperCase() + s.slice(1);
+
+    function layout() {
+      const list = U.shuffle([].concat(...KINDS.map(k => Array(cfg.perKind).fill(k))));
+      total = list.length; sorted = 0; selected = null;
+      tray.innerHTML = '';
+      const W = tray.clientWidth || 360, cols = Math.min(4, list.length), cw = W / cols;
+      list.forEach((k, i) => {
+        const s = U.el('button', 'm-drag-shape', U.shape(k, 'var(--m-' + (SHAPE_COLOR[k] || 'accent') + ')'));
+        s.dataset.k = k; s.setAttribute('aria-label', k + ', move to its basket');
+        const hx = (i % cols) * cw + cw / 2 - 32 + U.rand(-6, 6);
+        const hy = Math.floor(i / cols) * 78 + 10 + U.rand(-4, 4);
+        s.dataset.hx = hx; s.dataset.hy = hy; s.style.left = hx + 'px'; s.style.top = hy + 'px';
+        tray.appendChild(s); wireShape(s);
+      });
+      tray.style.height = (Math.ceil(list.length / cols) * 78 + 12) + 'px';
+      ctx.progress(0, total);
     }
-    bins.querySelectorAll('.m-bin').forEach(bin => bin.onclick = () => {
-      if (!sel) return; const ok = bin.dataset.k === sel; ctx.attempt(ok); ctx.count('shapeSort');
-      ctx.feedback(ok ? `Yes — that's a ${sel}.` : `That bin is for ${bin.dataset.k}s. Try again.`, ok ? 'ok' : 'no');
-      if (ok) { bin.classList.add('flash'); setTimeout(() => bin.classList.remove('flash'), 400); round++; ctx.progress(round, cfg.rounds); if (round >= cfg.rounds) setTimeout(ctx.solved, 500); else newRound(); }
+
+    function binAt(x, y) { return [...bins.querySelectorAll('.m-bin')].find(b => { const r = b.getBoundingClientRect(); return x >= r.left && x <= r.right && y >= r.top && y <= r.bottom; }); }
+
+    function place(shape, bin) {
+      const ok = bin && bin.dataset.k === shape.dataset.k;
+      ctx.attempt(!!ok); ctx.count('shapeSort');
+      if (ok) {
+        const cnt = bins.querySelector('[data-c="' + shape.dataset.k + '"]'); if (cnt) cnt.textContent = +cnt.textContent + 1;
+        bin.classList.add('flash'); setTimeout(() => bin.classList.remove('flash'), 400);
+        shape.classList.add('placed'); setTimeout(() => shape.remove(), 200);
+        sorted++; selected = null; ctx.progress(sorted, total);
+        ctx.feedback(cap(shape.dataset.k) + ' — in its basket!', 'ok');
+        if (sorted >= total) { round++; if (round >= cfg.rounds) setTimeout(ctx.solved, 550); else setTimeout(layout, 750); }
+      } else {
+        ctx.feedback(bin ? `That's the ${bin.dataset.k} basket — this is a ${shape.dataset.k}.` : 'Drop it onto a basket.', 'no');
+        springBack(shape);
+      }
+    }
+    function springBack(shape) { shape.classList.add('returning'); shape.style.left = shape.dataset.hx + 'px'; shape.style.top = shape.dataset.hy + 'px'; setTimeout(() => shape.classList.remove('returning'), 280); }
+    function selectOnly(shape) { tray.querySelectorAll('.m-drag-shape.selected').forEach(s => s.classList.remove('selected')); if (shape) { shape.classList.add('selected'); selected = shape; ctx.feedback('Now tap the ' + shape.dataset.k + '’s basket.', ''); } else selected = null; }
+
+    function wireShape(shape) {
+      let dragging = false, moved = false, id = null, gx = 0, gy = 0, sx = 0, sy = 0;
+      shape.addEventListener('pointerdown', e => {
+        e.preventDefault(); dragging = true; moved = false; id = e.pointerId; sx = e.clientX; sy = e.clientY;
+        try { shape.setPointerCapture(id); } catch (_) {}
+        const r = shape.getBoundingClientRect(); gx = e.clientX - r.left; gy = e.clientY - r.top;
+        shape.classList.add('dragging'); shape.classList.remove('returning');
+      });
+      shape.addEventListener('pointermove', e => {
+        if (!dragging) return;
+        if (Math.abs(e.clientX - sx) > 3 || Math.abs(e.clientY - sy) > 3) moved = true;
+        const tr = tray.getBoundingClientRect();
+        shape.style.left = (e.clientX - tr.left - gx) + 'px'; shape.style.top = (e.clientY - tr.top - gy) + 'px';
+        const over = binAt(e.clientX, e.clientY); bins.querySelectorAll('.m-bin').forEach(b => b.classList.toggle('dragover', b === over));
+      });
+      shape.addEventListener('pointerup', e => {
+        if (!dragging) return; dragging = false; shape.classList.remove('dragging');
+        try { shape.releasePointerCapture(id); } catch (_) {}
+        bins.querySelectorAll('.m-bin').forEach(b => b.classList.remove('dragover'));
+        if (moved) place(shape, binAt(e.clientX, e.clientY));
+        else selectOnly(shape.classList.contains('selected') ? null : shape);   // tap = select
+      });
+      shape.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); selectOnly(shape.classList.contains('selected') ? null : shape); } });
+    }
+    bins.querySelectorAll('.m-bin').forEach(bin => {
+      const go = () => { if (selected) place(selected, bin); };
+      bin.addEventListener('click', go);
+      bin.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(); } });
     });
-    ctx.progress(0, cfg.rounds); newRound();
+    layout();
   } });
 
   /* ========================================================== ARRAY BUILDER ===
@@ -346,10 +411,12 @@
     ctx.progress(0, cfg.rounds); newRound();
   } });
 
-  /* =========================================================== PLACE VALUE ===
-     Compose a number from hundreds / tens / ones (base-ten blocks).
+  /* =========================================================== GOLDEN BEADS ===
+     Montessori golden-bead place value: compose a quantity from unit beads,
+     ten-bars and hundred-squares, and watch it pair with the numeral via
+     place-value "number cards" (700 + 20 + 4 → 724) — quantity meets symbol.
      config: { rounds, max }                                                   */
-  R('placeValue', { title: 'Base-ten blocks', mount(host, cfg, ctx) {
+  R('placeValue', { title: 'Golden beads', mount(host, cfg, ctx) {
     cfg = Object.assign({ rounds: 3, max: 999 }, cfg);
     let round = 0;
     const info = U.el('p', 'm-prompt'); host.appendChild(info);
@@ -357,15 +424,21 @@
     function newRound() {
       const target = U.rand(cfg.max > 99 ? 100 : 11, cfg.max);
       const useH = cfg.max > 99;
-      info.innerHTML = `Build <b>${target}</b> with blocks.`;
+      info.innerHTML = `Build <b>${target}</b> with golden beads.`;
       let h = 0, t = 0, o = 0;
       const cols = [useH ? { k: 'h', v: 100, lab: 'Hundreds' } : null, { k: 't', v: 10, lab: 'Tens' }, { k: 'o', v: 1, lab: 'Ones' }].filter(Boolean);
-      stage.innerHTML = `<div class="m-pv-cols">${cols.map(c => `<div class="m-pv-col" data-k="${c.k}"><div class="m-pv-lab">${c.lab}</div><div class="m-pv-stack" data-k="${c.k}"></div><div class="m-pv-ctrls"><button class="m-btn tiny" data-add="${c.k}">+</button><button class="m-btn tiny ghost" data-sub="${c.k}">−</button></div></div>`).join('')}</div><div class="m-pv-total">= <span id="m-pv-n">0</span></div>`;
+      stage.innerHTML = `<div class="m-pv-cols">${cols.map(c => `<div class="m-pv-col" data-k="${c.k}"><div class="m-pv-lab">${c.lab}</div><div class="m-pv-stack" data-k="${c.k}"></div><div class="m-pv-ctrls"><button class="m-btn tiny" data-add="${c.k}" aria-label="add ${c.lab}">+</button><button class="m-btn tiny ghost" data-sub="${c.k}" aria-label="remove ${c.lab}">−</button></div></div>`).join('')}</div>
+        <div class="m-pv-cards" id="m-pv-cards"></div>
+        <div class="m-pv-total">= <span id="m-pv-n">0</span></div>`;
       const get = k => k === 'h' ? h : k === 't' ? t : o;
       const set = (k, val) => { if (k === 'h') h = val; else if (k === 't') t = val; else o = val; };
       function draw() {
         cols.forEach(c => { const stack = stage.querySelector(`.m-pv-stack[data-k="${c.k}"]`); const n = get(c.k); stack.innerHTML = U.range(n).map(() => `<span class="m-pv-block b-${c.k}"></span>`).join(''); });
         const total = h * 100 + t * 10 + o; stage.querySelector('#m-pv-n').textContent = total;
+        const parts = [h * 100, t * 10, o].filter(v => v > 0);
+        stage.querySelector('#m-pv-cards').innerHTML = parts.length
+          ? parts.map(v => `<span class="m-pv-card">${v}</span>`).join('<span class="m-pv-plus">+</span>')
+          : '<span class="m-pv-card zero">0</span>';
         if (total === target) { ctx.attempt(true); ctx.count('placeValue'); ctx.feedback(`${useH ? h + ' hundreds, ' : ''}${t} tens, ${o} ones = ${target}!`, 'ok'); round++; ctx.progress(round, cfg.rounds); if (round >= cfg.rounds) setTimeout(ctx.solved, 700); else setTimeout(newRound, 1000); }
       }
       stage.querySelectorAll('[data-add]').forEach(b => b.onclick = () => { const k = b.dataset.add; if (get(k) < 12) { set(k, get(k) + 1); draw(); } });
@@ -497,6 +570,117 @@
       if (ok) { i++; if (i >= problems.length) { ctx.progress(problems.length, problems.length); setTimeout(ctx.solved, 500); } else setTimeout(render, 700); }
     }
     render();
+  } });
+
+  /* ============================================================ NUMBER RODS ===
+     Montessori number rods: ten rods of growing length, each split into
+     alternating red/blue unit segments — quantity felt as *length*, not scattered
+     objects. mode 'identify' picks the rod of a named length; mode 'add' lays two
+     rods end-to-end to reach the sum. config: { mode, max, rounds }            */
+  R('numberRods', { title: 'Number rods', mount(host, cfg, ctx) {
+    cfg = Object.assign({ mode: 'identify', max: 10, rounds: 3 }, cfg);
+    const SEG = 26, MAX = cfg.max; let round = 0;
+    const info = U.el('p', 'm-prompt'); host.appendChild(info);
+    const stage = U.el('div', 'm-rods-stage'); host.appendChild(stage);
+    function rod(n, cls) {
+      const d = U.el('div', 'm-rod ' + (cls || '')); d.style.width = (n * SEG) + 'px';
+      for (let i = 0; i < n; i++) d.appendChild(U.el('span', 'm-rod-seg ' + (i % 2 ? 'b' : 'a')));
+      d.dataset.n = n; d.title = n + ' units'; return d;
+    }
+    function ruler() { const r = U.el('div', 'm-rod-ruler'); r.style.width = (MAX * SEG) + 'px'; for (let i = 0; i <= MAX; i++) { const t = U.el('span', 'm-rod-tick', String(i)); t.style.left = (i * SEG) + 'px'; r.appendChild(t); } return r; }
+
+    function identify() {
+      const target = U.rand(1, MAX);
+      info.innerHTML = `Click the rod that is <b>${target}</b> long. Count the red and blue parts.`;
+      stage.innerHTML = ''; const stair = U.el('div', 'm-rod-stair');
+      U.shuffle(U.range(MAX).map(i => i + 1)).forEach(n => {
+        const r = rod(n, 'clickable'); r.setAttribute('role', 'button'); r.tabIndex = 0;
+        const go = () => { const ok = n === target; ctx.attempt(ok); ctx.count('numberRods');
+          r.classList.add(ok ? 'good' : 'bad'); if (!ok) setTimeout(() => r.classList.remove('bad'), 500);
+          ctx.feedback(ok ? `Yes — ${n} parts long!` : `That rod is ${n}. Count the parts to find ${target}.`, ok ? 'ok' : 'no');
+          if (ok) { round++; ctx.progress(round, cfg.rounds); if (round >= cfg.rounds) setTimeout(ctx.solved, 650); else setTimeout(identify, 900); } };
+        r.onclick = go; r.onkeydown = e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(); } };
+        stair.appendChild(r);
+      });
+      stage.appendChild(stair);
+    }
+
+    function add() {
+      const a = U.rand(1, MAX - 1), b = U.rand(1, MAX - a);
+      info.innerHTML = `Here is a rod of <b>${a}</b>. Add a rod of <b>${b}</b> — pick it below and lay it on the end.`;
+      stage.innerHTML = '';
+      const track = U.el('div', 'm-rod-track'); track.appendChild(ruler());
+      const laid = U.el('div', 'm-rod-laid'); laid.appendChild(rod(a, 'a-rod')); track.appendChild(laid); stage.appendChild(track);
+      const tray = U.el('div', 'm-rod-tray');
+      U.shuffle(U.range(MAX).map(i => i + 1)).forEach(n => {
+        const r = rod(n, 'clickable'); r.setAttribute('role', 'button'); r.tabIndex = 0;
+        const go = () => {
+          if (n !== b) { ctx.attempt(false); ctx.count('numberRods'); r.classList.add('bad'); setTimeout(() => r.classList.remove('bad'), 450); ctx.feedback(`That rod is ${n}. We need the ${b}-rod.`, 'no'); return; }
+          ctx.attempt(true); ctx.count('numberRods'); laid.appendChild(rod(b, 'b-rod')); tray.remove(); ctx.feedback('Now count where the rods reach…', '');
+          answerField(stage, { label: `${a} + ${b} =`, onCheck(v) {
+            const ok = +v === a + b; ctx.attempt(ok);
+            ctx.feedback(ok ? `${a} + ${b} = ${a + b} — the rods reach ${a + b}!` : 'Count every part, red and blue.', ok ? 'ok' : 'no');
+            if (ok) { round++; ctx.progress(round, cfg.rounds); if (round >= cfg.rounds) ctx.solved(); else setTimeout(add, 900); }
+          } });
+        };
+        r.onclick = go; r.onkeydown = e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(); } };
+        tray.appendChild(r);
+      });
+      stage.appendChild(tray);
+    }
+    ctx.progress(0, cfg.rounds); (cfg.mode === 'add' ? add : identify)();
+  } });
+
+  /* ========================================================== THREE-PERIOD ===
+     Montessori's three-period lesson as a reusable activity:
+       1. Presentation — "This is a triangle."   (name each item)
+       2. Recognition  — "Show me the triangle." (click the right one)
+       3. Recall       — "What is this?"          (name it back)
+     config: { items:[{ id, label, shape? , html? }] }                        */
+  R('threePeriod', { title: 'Name & recognise', mount(host, cfg, ctx) {
+    const items = cfg.items || []; if (!items.length) { ctx.solved(); return; }
+    const byId = id => items.find(x => x.id === id);
+    const viz = it => it.shape ? U.shape(it.shape, 'var(--m-' + (SHAPE_COLOR[it.shape] || 'accent') + ')') : (it.html || it.label);
+    let i = 0, order = U.shuffle(items.map(x => x.id)), busy = false;
+    const info = U.el('p', 'm-prompt'); host.appendChild(info);
+    const stage = U.el('div', 'm-tp-stage'); host.appendChild(stage);
+    const foot = U.el('div', 'm-tp-foot'); host.appendChild(foot);
+
+    function p1() {
+      ctx.progress(0, 0); const it = items[i];
+      info.innerHTML = '<span class="m-tp-badge">1 · Meet them</span>';
+      stage.innerHTML = `<div class="m-tp-card"><div class="m-tp-viz">${viz(it)}</div><div class="m-tp-say">This is a <b>${it.label}</b>.</div></div>`;
+      foot.innerHTML = `<button class="m-btn">${i + 1 < items.length ? 'Next →' : 'I know these →'}</button>`;
+      foot.querySelector('button').onclick = () => { i++; if (i < items.length) p1(); else { i = 0; order = U.shuffle(items.map(x => x.id)); foot.innerHTML = ''; p2(); } };
+    }
+    function p2() {
+      if (i >= order.length) return; busy = false;
+      const id = order[i], it = byId(id); ctx.progress(i, order.length);
+      info.innerHTML = `<span class="m-tp-badge">2 · Show me</span> Show me the <b>${it.label}</b>.`;
+      stage.innerHTML = `<div class="m-tp-choices">${items.map(x => `<button class="m-tp-choice" data-id="${x.id}" aria-label="${x.label}">${viz(x)}</button>`).join('')}</div>`;
+      stage.querySelectorAll('.m-tp-choice').forEach(b => b.onclick = () => {
+        if (busy) return;
+        const ok = b.dataset.id === id; ctx.attempt(ok); ctx.count('threePeriod');
+        b.classList.add(ok ? 'good' : 'bad'); if (!ok) setTimeout(() => b.classList.remove('bad'), 500);
+        ctx.feedback(ok ? `Yes — that's the ${it.label}.` : `That's the ${byId(b.dataset.id).label}. Find the ${it.label}.`, ok ? 'ok' : 'no');
+        if (ok) { busy = true; i++; if (i < order.length) setTimeout(p2, 650); else { i = 0; order = U.shuffle(items.map(x => x.id)); setTimeout(p3, 650); } }
+      });
+    }
+    function p3() {
+      if (i >= order.length) return; busy = false;
+      const id = order[i], it = byId(id); ctx.progress(i, order.length);
+      info.innerHTML = `<span class="m-tp-badge">3 · What is this?</span>`;
+      const names = U.shuffle(items.map(x => x.label));
+      stage.innerHTML = `<div class="m-tp-card"><div class="m-tp-viz">${viz(it)}</div></div>
+        <div class="m-tp-names">${names.map(nm => `<button class="m-btn ghost m-tp-name" data-nm="${nm}">${nm}</button>`).join('')}</div>`;
+      stage.querySelectorAll('.m-tp-name').forEach(b => b.onclick = () => {
+        if (busy) return;
+        const ok = b.dataset.nm === it.label; ctx.attempt(ok); ctx.count('threePeriod');
+        ctx.feedback(ok ? `Yes — a ${it.label}!` : 'Look again — what is it called?', ok ? 'ok' : 'no');
+        if (ok) { busy = true; i++; if (i < order.length) setTimeout(p3, 650); else setTimeout(ctx.solved, 600); }
+      });
+    }
+    p1();
   } });
 
 })();

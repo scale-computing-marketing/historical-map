@@ -45,7 +45,7 @@ subjects/
   math/                 Math Explorer (self-contained learning engine)
     index.html
     engine/             store.js (progress), graph.js (knowledge graph),
-                        components.js (12 reusable manipulatives),
+                        components.js (14 reusable manipulatives),
                         player.js (the lesson flow), map.js (the learning map),
                         app.js (boot + progress panel)
     data/               concepts.js (the K–Calculus graph) + lessons-*.js
