@@ -630,13 +630,11 @@
 
   /* ---------------- TOP BAR MENUS ---------------- */
   function wireMenus() {
-    const warBtn = document.getElementById('war-btn'), warPop = document.getElementById('war-pop');
     const layerBtn = document.getElementById('layers-btn'), layerPop = document.getElementById('layers-pop');
     const projBtn = document.getElementById('proj-btn'), projPop = document.getElementById('proj-pop');
-    const closeAll = () => { warPop.classList.remove('open'); layerPop.classList.remove('open'); projPop.classList.remove('open'); };
+    const closeAll = () => { layerPop.classList.remove('open'); projPop.classList.remove('open'); };
 
-    buildWarMenu();
-    warBtn.onclick = (e) => { e.stopPropagation(); const open = warPop.classList.contains('open'); closeAll(); if (!open) warPop.classList.add('open'); };
+    buildWarMenu();   // renders the war list into the sidebar
 
     layerBtn.onclick = (e) => { e.stopPropagation(); const open = layerPop.classList.contains('open'); closeAll(); if (!open) layerPop.classList.add('open'); };
     layerPop.querySelectorAll('input').forEach(cb => cb.onchange = () => {
@@ -659,13 +657,14 @@
   }
 
   function buildWarMenu() {
-    const warPop = document.getElementById('war-pop');
-    warPop.innerHTML = '<div class="head">Choose a war</div>' + WARS.map(w =>
-      `<button class="menu-war" data-war="${w.id}" style="display:block;width:100%;text-align:left;border:0;background:none;color:var(--ink);padding:7px 8px;border-radius:6px;font-weight:${w.id === war.id ? 600 : 400}">
-        ${w.meta.name}<span style="display:block;font-size:11px;color:var(--muted)">${w.meta.duration}</span></button>`).join('');
-    warPop.querySelectorAll('.menu-war').forEach(b => b.onclick = () => {
-      warPop.classList.remove('open');
+    const list = document.getElementById('war-list');
+    list.innerHTML = WARS.map(w =>
+      `<button class="la-navitem war-item${w.id === war.id ? ' active' : ''}" data-war="${w.id}">
+        <span class="dot ${w.id === war.id ? 'now' : ''}"></span>
+        <span class="li-main"><span class="nm">${w.meta.name}</span><span class="war-dur ui">${w.meta.duration}</span></span></button>`).join('');
+    list.querySelectorAll('[data-war]').forEach(b => b.onclick = () => {
       switchWar(b.dataset.war);
+      document.getElementById('app').classList.remove('nav-open');   // close mobile slide-over
     });
   }
 
@@ -784,10 +783,18 @@
   function boot() {
     buildMap();
     matchMedia('(prefers-color-scheme: dark)').addEventListener('change', reTheme);
-    wireSearch(); wireMenus(); wireTimeline();
+    wireSearch(); wireMenus(); wireTimeline(); wireShellChrome();
     applyWarChrome();
     loadGeometryAndRender();
     setTimeout(() => { document.getElementById('hint').style.opacity = 1; }, 200);
+  }
+
+  /* Sidebar-shell chrome: collapse the rail, toggle the mobile slide-over. */
+  function wireShellChrome() {
+    const appEl = document.getElementById('app');
+    document.getElementById('collapse-btn').onclick = () => appEl.classList.toggle('collapsed');
+    document.getElementById('menu-btn').onclick = () => appEl.classList.toggle('nav-open');
+    document.getElementById('scrim').onclick = () => appEl.classList.remove('nav-open');
   }
 
   function wireTimeline() {

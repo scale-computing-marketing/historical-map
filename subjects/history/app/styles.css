@@ -11,6 +11,18 @@
    map and are intentionally left as-is — do not restyle the map here.
    ========================================================================== */
 
+/* ---- sidebar-shell additions -------------------------------------------- */
+/* war list: two-line nav items (name + duration) */
+.war-item{align-items:flex-start}
+.war-item .li-main{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px}
+.war-item .war-dur{font-family:var(--ui);font-size:var(--fs-xs);color:var(--muted)}
+.war-item .dot{margin-top:5px}
+/* on-canvas map controls: popovers open upward from the bottom-right cluster */
+.la-canvas-controls .menu-pop.up{top:auto;bottom:calc(100% + 8px);right:0;left:auto}
+.la-canvas-controls .menu-pop .menu-item{display:block;width:100%;text-align:left;border:0;background:none;
+  color:var(--ink);padding:6px 8px;border-radius:var(--r-xs);font-family:var(--ui);font-size:var(--fs-md)}
+.la-canvas-controls .menu-pop .menu-item:hover{background:var(--panel2)}
+
 /* ---- map-specific tokens (extend the shared palette) --------------------- */
 :root{
   --ocean:#e3e9ec; --sphere:rgba(43,38,32,.18); --grat:rgba(43,38,32,.06);

@@ -8,92 +8,126 @@
 <link rel="stylesheet" href="app/styles.css">
 </head>
 <body>
-<div id="app">
+<div id="app" class="la-shell">
 
-  <!-- TOP BAR -->
-  <header id="topbar" class="ui">
-    <a class="homelink" href="../../" title="Back to the Learning Atlas hub">← Atlas</a>
-    <div class="brand"><small>Historical Wars Explorer</small><span id="brand-title">American Revolutionary War</span></div>
-    <div class="searchbox">
-      <input id="search" type="text" placeholder="Search countries, battles, leaders, years…" aria-label="Search" autocomplete="off">
-      <div id="results" class="results"></div>
+  <!-- ===================== SIDEBAR ===================== -->
+  <aside class="la-side" id="sidebar" aria-label="Navigation">
+    <div class="la-brand">
+      <a class="la-logo" href="../../" title="Back to the Learning Atlas hub" aria-label="Learning Atlas home">✦</a>
+      <span class="la-brand-txt"><b>Wars Explorer</b><small>History</small></span>
+      <button class="btn btn-ghost btn-icon btn-sm" id="collapse-btn" aria-label="Collapse sidebar" data-tooltip="Collapse">‹</button>
     </div>
-    <div class="spacer"></div>
-    <div class="tb-menu">
-      <button class="tb-btn" id="war-btn" title="Choose a war">War ▾</button>
-      <div class="menu-pop" id="war-pop"></div>
-    </div>
-    <button class="tb-btn" id="overview-btn" title="War overview">Overview</button>
-    <button class="tb-btn" id="world-btn">World at this time</button>
-    <button class="tb-btn" id="quiz-btn">Quiz</button>
-    <div class="tb-menu">
-      <button class="tb-btn" id="layers-btn">Layers ▾</button>
-      <div class="menu-pop" id="layers-pop">
-        <div class="head">Map layers</div>
-        <label><input type="checkbox" data-layer="political" checked> Political world</label>
-        <label><input type="checkbox" data-layer="borders" checked> Historical borders</label>
-        <label><input type="checkbox" data-layer="cities" checked> Major cities</label>
-        <label><input type="checkbox" data-layer="battles" checked> Battles</label>
+    <div class="la-side-scroll">
+      <a class="la-subject" href="../../" title="Switch subject"><span class="ic">🗺️</span><span class="nm">History</span><span style="opacity:.5">▾</span></a>
+
+      <div class="la-navgroup">
+        <button class="la-grouphead" aria-expanded="true"><span class="tw">▾</span><span>Wars</span></button>
+        <nav id="war-list" class="la-subgroup" aria-label="Choose a war"></nav>
       </div>
-    </div>
-    <div class="tb-menu">
-      <button class="tb-btn" id="proj-btn">Projection ▾</button>
-      <div class="menu-pop" id="proj-pop">
-        <div class="head">Projection</div>
-        <button class="menu-proj" data-proj="robinson" style="font-weight:600;display:block;width:100%;text-align:left;border:0;background:none;color:var(--ink);padding:6px 8px;border-radius:6px">Robinson</button>
-        <button data-proj="winkel" style="display:block;width:100%;text-align:left;border:0;background:none;color:var(--ink);padding:6px 8px;border-radius:6px">Winkel Tripel</button>
-        <button data-proj="natural" style="display:block;width:100%;text-align:left;border:0;background:none;color:var(--ink);padding:6px 8px;border-radius:6px">Natural Earth</button>
-        <button data-proj="mercator" style="display:block;width:100%;text-align:left;border:0;background:none;color:var(--ink);padding:6px 8px;border-radius:6px">Mercator</button>
-        <button data-proj="orthographic" style="display:block;width:100%;text-align:left;border:0;background:none;color:var(--ink);padding:6px 8px;border-radius:6px">Orthographic globe</button>
-      </div>
-    </div>
-  </header>
 
-  <!-- STAGE -->
-  <div id="stage">
-    <div id="map" role="region" aria-label="Historical map"></div>
-    <div class="maptip" id="maptip"></div>
-    <div class="hint" id="hint" style="opacity:0">Drag the timeline. Click a country, city, or battle.</div>
-    <div class="legend ui" id="legend" aria-live="polite"></div>
-    <div class="live-instruction ui" id="live-instruction"></div>
-    <div class="zoomctl">
-      <button id="reset" title="Reset view">⤢</button>
-    </div>
-
-    <!-- WORLD AT THIS TIME -->
-    <div id="world" class="ui">
-      <div class="wh"><h4 id="world-year">The world at this time</h4><div class="spacer" style="flex:1"></div><button class="icon-btn" id="world-close">✕</button></div>
-      <div class="cards" id="world-cards"></div>
-    </div>
-
-    <!-- RAIL -->
-    <aside id="rail" aria-label="Information panel">
-      <div class="rail-head">
-        <div style="flex:1">
-          <div class="rkind ui" id="rkind">War</div>
-          <div class="rtitle" id="rtitle">American Revolutionary War</div>
+      <div class="la-navgroup">
+        <button class="la-grouphead" aria-expanded="true"><span class="tw">▾</span><span>This war</span></button>
+        <div class="la-subgroup">
+          <button class="la-navitem" id="overview-btn"><span class="dot now"></span><span class="nm">War overview</span></button>
+          <button class="la-navitem" id="world-btn"><span class="dot"></span><span class="nm">World at this time</span></button>
+          <button class="la-navitem" id="quiz-btn"><span class="dot"></span><span class="nm">Take the quiz</span></button>
         </div>
-        <button class="icon-btn" id="railclose" title="Close">✕</button>
       </div>
-      <div class="tabs" id="tabs"></div>
-      <div class="rail-body" id="railbody"></div>
-    </aside>
+    </div>
+    <div class="la-side-foot ui" style="font-size:var(--fs-sm);color:var(--muted);line-height:1.5">
+      <span>Drag the timeline below to scrub through the years. Click any country, city or battle on the map.</span>
+    </div>
+  </aside>
+
+  <!-- ===================== MAIN ===================== -->
+  <div class="la-main">
+    <header class="la-appbar">
+      <button class="btn btn-ghost btn-icon btn-sm la-menu-toggle" id="menu-btn" aria-label="Open menu">☰</button>
+      <nav class="la-crumbs" id="crumbs" aria-label="Breadcrumb">
+        <a href="../../">Atlas</a><span class="sep">›</span>
+        <span>History</span><span class="sep">›</span>
+        <span class="here" id="brand-title">American Revolutionary War</span>
+      </nav>
+      <span class="spacer"></span>
+      <div class="searchbox">
+        <input id="search" type="text" placeholder="Search countries, battles, leaders, years…" aria-label="Search" autocomplete="off">
+        <div id="results" class="results"></div>
+      </div>
+    </header>
+
+    <div id="stage">
+      <div id="map" role="region" aria-label="Historical map"></div>
+      <div class="maptip" id="maptip"></div>
+      <div class="hint" id="hint" style="opacity:0">Drag the timeline. Click a country, city, or battle.</div>
+      <div class="legend ui" id="legend" aria-live="polite"></div>
+      <div class="live-instruction ui" id="live-instruction"></div>
+
+      <!-- zoom control (top-left) -->
+      <div class="zoomctl">
+        <button id="reset" title="Reset view" aria-label="Reset view">⤢</button>
+      </div>
+
+      <!-- map controls (bottom-right): layers + projection -->
+      <div class="la-canvas-controls">
+        <div class="tb-menu">
+          <button class="btn btn-secondary btn-icon" id="layers-btn" data-tooltip="Map layers" aria-label="Map layers">▤</button>
+          <div class="menu-pop up" id="layers-pop">
+            <div class="head">Map layers</div>
+            <label><input type="checkbox" data-layer="political" checked> Political world</label>
+            <label><input type="checkbox" data-layer="borders" checked> Historical borders</label>
+            <label><input type="checkbox" data-layer="cities" checked> Major cities</label>
+            <label><input type="checkbox" data-layer="battles" checked> Battles</label>
+          </div>
+        </div>
+        <div class="tb-menu">
+          <button class="btn btn-secondary btn-icon" id="proj-btn" data-tooltip="Map projection" aria-label="Map projection">◐</button>
+          <div class="menu-pop up" id="proj-pop">
+            <div class="head">Projection</div>
+            <button class="menu-item menu-proj" data-proj="robinson" style="font-weight:600">Robinson</button>
+            <button class="menu-item" data-proj="winkel">Winkel Tripel</button>
+            <button class="menu-item" data-proj="natural">Natural Earth</button>
+            <button class="menu-item" data-proj="mercator">Mercator</button>
+            <button class="menu-item" data-proj="orthographic">Orthographic globe</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- WORLD AT THIS TIME (bottom drawer) -->
+      <div id="world" class="ui">
+        <div class="wh"><h4 id="world-year">The world at this time</h4><div class="spacer" style="flex:1"></div><button class="icon-btn" id="world-close" aria-label="Close">✕</button></div>
+        <div class="cards" id="world-cards"></div>
+      </div>
+    </div>
+
+    <!-- TIMELINE -->
+    <footer id="timeline" class="ui">
+      <div class="yearbig" id="yearbig">1778</div>
+      <div class="ctrl">
+        <button id="prev" title="Previous year" aria-label="Previous year">‹</button>
+        <button id="play" title="Play / pause" aria-label="Play or pause">▶</button>
+        <button id="next" title="Next year" aria-label="Next year">›</button>
+      </div>
+      <div class="tl-track">
+        <input type="range" id="yearslider" min="1775" max="1783" value="1778" step="1" aria-label="Year">
+        <div class="tl-ticks"><span>1775</span><span>1777</span><span>1779</span><span>1781</span><span>1783</span></div>
+      </div>
+      <input type="number" id="yearinput" class="yearinput" min="1775" max="1783" value="1778" aria-label="Enter year">
+    </footer>
   </div>
 
-  <!-- TIMELINE -->
-  <footer id="timeline" class="ui">
-    <div class="yearbig" id="yearbig">1778</div>
-    <div class="ctrl">
-      <button id="prev" title="Previous year">‹</button>
-      <button id="play" title="Play / pause">▶</button>
-      <button id="next" title="Next year">›</button>
+  <!-- ===================== SHARED DRAWER (scrim + rail) ===================== -->
+  <div class="la-scrim" id="scrim"></div>
+  <aside id="rail" aria-label="Information panel">
+    <div class="rail-head">
+      <div style="flex:1">
+        <div class="rkind ui" id="rkind">War</div>
+        <div class="rtitle" id="rtitle">American Revolutionary War</div>
+      </div>
+      <button class="icon-btn" id="railclose" title="Close" aria-label="Close panel">✕</button>
     </div>
-    <div class="tl-track">
-      <input type="range" id="yearslider" min="1775" max="1783" value="1778" step="1" aria-label="Year">
-      <div class="tl-ticks"><span>1775</span><span>1777</span><span>1779</span><span>1781</span><span>1783</span></div>
-    </div>
-    <input type="number" id="yearinput" class="yearinput" min="1775" max="1783" value="1778" aria-label="Enter year">
-  </footer>
+    <div class="tabs" id="tabs"></div>
+    <div class="rail-body" id="railbody"></div>
+  </aside>
 
   <!-- QUIZ -->
   <div id="quiz"><div class="quizcard ui" id="quizcard"></div></div>
