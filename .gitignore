@@ -11,3 +11,7 @@
 
 # Node (in case tooling is added later)
 node_modules/
+
+# Licensed 3D assets — do NOT commit (redistribution of purchased models)
+/_source/
+subjects/biology/assets/
