@@ -13,33 +13,51 @@
   <!-- TOP BAR -->
   <header id="topbar" class="ui">
     <a class="homelink" href="../../" title="Back to the Learning Atlas hub">← Atlas</a>
-    <div class="brand"><small>Life Explorer</small><span id="brand-title">Animal Cell</span></div>
+    <div class="brand"><small>Life Explorer</small><span id="brand-title">Learning Map</span></div>
     <div class="searchbox">
-      <input id="search" type="text" placeholder="Search organelles, parts…" aria-label="Search" autocomplete="off">
+      <input id="search" type="text" placeholder="Search concepts…" aria-label="Search concepts" autocomplete="off">
       <div id="results" class="results"></div>
     </div>
     <div class="spacer"></div>
     <div class="tb-menu">
-      <button class="tb-btn" id="topic-btn" title="Choose a topic">Topic ▾</button>
+      <button class="tb-btn" id="view-btn" title="Map legend">Legend ▾</button>
+      <div class="menu-pop" id="view-pop">
+        <div class="head">Node status</div>
+        <div class="m-legend-row"><span class="m-swatch st-mastered"></span> Mastered</div>
+        <div class="m-legend-row"><span class="m-swatch st-available"></span> Ready to learn</div>
+        <div class="m-legend-row"><span class="m-swatch st-ready-soon"></span> Unlocked · coming soon</div>
+        <div class="m-legend-row"><span class="m-swatch st-locked"></span> Locked (needs a prerequisite)</div>
+        <div class="head" style="margin-top:8px">How it works</div>
+        <p class="m-legend-note">Master a concept to unlock the ones that depend on it. Lines show prerequisites. Units are a suggested path — you don't have to follow them in order.</p>
+      </div>
+    </div>
+    <div class="tb-menu">
+      <button class="tb-btn" id="topic-btn" title="Explore an interactive model">Explore ▾</button>
       <div class="menu-pop" id="topic-pop"></div>
     </div>
-    <button class="tb-btn" id="overview-btn">Overview</button>
-    <button class="tb-btn" id="quiz-btn">Quiz</button>
+    <button class="tb-btn" id="map-btn">Map</button>
+    <button class="tb-btn" id="continue-btn" title="Jump to the recommended next lesson">Continue ▸</button>
+    <button class="tb-btn" id="progress-btn">Progress</button>
+    <button class="tb-btn" id="quiz-btn" style="display:none">Quiz</button>
   </header>
 
   <!-- STAGE -->
   <div id="stage">
-    <div id="canvas" role="region" aria-label="Interactive biology diagram"></div>
-    <div class="legend ui" id="legend" aria-live="polite"></div>
-    <div class="hint ui" id="hint">Click any labelled part to learn what it does.</div>
-    <div class="live-instruction ui" id="live-instruction"></div>
+    <div id="bio-main">
+      <div id="bio-map" class="m-view" role="region" aria-label="Learning map"></div>
+      <div id="bio-lesson" class="m-view" role="region" aria-label="Lesson" style="display:none"></div>
+      <div id="canvas" role="region" aria-label="Interactive biology diagram" style="display:none"></div>
+      <div class="legend ui" id="legend" aria-live="polite" style="display:none"></div>
+      <div class="hint ui" id="hint" style="display:none">Click any labelled part to learn what it does.</div>
+      <div class="live-instruction ui" id="live-instruction"></div>
+    </div>
 
-    <!-- RAIL -->
+    <!-- RAIL (progress / info) -->
     <aside id="rail" aria-label="Information panel">
       <div class="rail-head">
         <div style="flex:1">
-          <div class="rkind ui" id="rkind">Topic</div>
-          <div class="rtitle" id="rtitle">Animal Cell</div>
+          <div class="rkind ui" id="rkind">Field notebook</div>
+          <div class="rtitle" id="rtitle">Your progress</div>
         </div>
         <button class="icon-btn" id="railclose" title="Close">✕</button>
       </div>
@@ -54,11 +72,22 @@
 
 <script type="module" src="vendor/model-viewer.min.js"></script>
 <script src="../../core/shell.js"></script>
+<script src="engine/store.js"></script>
+<script src="engine/graph.js"></script>
+<script src="engine/components.js"></script>
+<script src="engine/player.js"></script>
+<script src="engine/map.js"></script>
+<script src="explorer.js"></script>
 <script src="data/cell.js"></script>
 <script src="data/plant-cell.js"></script>
 <script src="data/tree-of-life.js"></script>
 <script src="data/body-systems.js"></script>
 <script src="data/genetics.js"></script>
-<script src="explorer.js"></script>
+<script src="data/concepts.js"></script>
+<script src="data/lessons-life.js"></script>
+<script src="data/lessons-cells.js"></script>
+<script src="data/lessons-processes.js"></script>
+<script src="data/lessons-more.js"></script>
+<script src="engine/app.js"></script>
 </body>
 </html>
