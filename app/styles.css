@@ -154,6 +154,15 @@ button{font-family:var(--ui);cursor:pointer}
 .doc .doc-sig strong{color:var(--ink)}
 .doc a.doc-link{display:inline-block;font-family:var(--ui);font-size:12.5px;color:var(--accent);text-decoration:none;margin-top:2px}
 .doc a.doc-link:hover{text-decoration:underline}
+.doc .amend-h{font-family:var(--ui);font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+  color:var(--muted);margin:12px 0 6px}
+.doc ol.amends{list-style:none;margin:0 0 4px;padding:0}
+.doc .amend{display:flex;gap:9px;align-items:flex-start;padding:4px 0;border-bottom:1px solid var(--rule)}
+.doc .amend:last-child{border-bottom:0}
+.doc .amend-n{flex:none;width:22px;height:22px;border-radius:50%;background:var(--accent);color:#fff;
+  font-family:var(--ui);font-size:11.5px;font-weight:700;display:flex;align-items:center;justify-content:center;margin-top:1px}
+.doc .amend-txt{font-size:13.5px;line-height:1.45}
+.doc .amend-yr{font-family:var(--ui);font-size:11px;color:var(--muted);margin-left:6px}
 /* battle prev/next navigation */
 .navrow{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 0 14px;font-family:var(--ui)}
 .navrow .nav-btn{border:1px solid var(--rule2);background:var(--page);color:var(--ink);border-radius:8px;padding:6px 12px;font-size:12.5px}

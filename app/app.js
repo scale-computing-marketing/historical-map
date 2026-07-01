@@ -438,10 +438,22 @@
           <div class="doc-meta">${E.fmt.date(d.date)}${d.author ? ' · ' + d.author : ''}</div>
           ${d.excerpt ? `<blockquote>${d.excerpt}</blockquote>` : ''}
           <p>${d.summary}</p>
+          ${amendmentsBlock(d.amendments)}
           ${d.significance ? `<p class="doc-sig"><strong>Why it matters:</strong> ${d.significance}</p>` : ''}
           ${d.url ? `<a class="doc-link" href="${d.url}" target="_blank" rel="noopener">Read the full text ↗</a>` : ''}
         </div>`).join('') +
       (docs.some(d => (d.sources || []).length) ? sourcesFor({ sources: [...new Set(docs.flatMap(d => d.sources || []))] }) : '');
+  }
+
+  /* Renders a document's amendments as a numbered list, split into the Bill of
+     Rights (1–10) and the later amendments. Returns '' when there are none. */
+  function amendmentsBlock(list) {
+    if (!list || !list.length) return '';
+    const row = a => `<li class="amend"><span class="amend-n">${a.n}</span><span class="amend-txt">${a.text}<span class="amend-yr">${a.year}</span></span></li>`;
+    const bor = list.filter(a => a.n <= 10), later = list.filter(a => a.n > 10);
+    return `
+      ${bor.length ? `<div class="amend-h">Bill of Rights · 1791</div><ol class="amends">${bor.map(row).join('')}</ol>` : ''}
+      ${later.length ? `<div class="amend-h">Later amendments</div><ol class="amends">${later.map(row).join('')}</ol>` : ''}`;
   }
 
   function tabStatistics() {

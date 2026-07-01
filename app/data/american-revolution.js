@@ -203,6 +203,44 @@
       significance: 'It came four years after the fighting ended, but it was the durable political order the Revolution made possible — turning the wartime confederation of states into a lasting national government.',
       url: 'https://www.archives.gov/founding-docs/constitution-transcript',
       confidence: 'high', sources: ['src:loc'], note: 'Ratified 1787–88; took effect 1789 — after the war, but its direct outcome.'
+    },
+    {
+      id: 'doc:amendments', name: 'The Bill of Rights & Amendments', date: { y: 1791, m: 12, d: 15 },
+      author: 'Amendments to the U.S. Constitution',
+      excerpt: '“Congress shall make no law … abridging the freedom of speech, or of the press; or the right of the people peaceably to assemble.” — First Amendment',
+      summary: 'The Constitution has been amended 27 times. The first ten — the Bill of Rights, ratified together on 15 December 1791 — answered demands during ratification for explicit guarantees of individual liberty. The remaining seventeen were added over the following two centuries.',
+      significance: 'The Bill of Rights grew directly out of the Revolution’s distrust of concentrated power, fixing in law the freedoms the war had been fought to secure; later amendments extended those principles — abolishing slavery and broadening the vote.',
+      url: 'https://www.archives.gov/founding-docs/bill-of-rights-transcript',
+      confidence: 'high', sources: ['src:loc'],
+      amendments: [
+        { n: 1, year: 1791, text: 'Freedom of religion, speech, press, assembly, and petition' },
+        { n: 2, year: 1791, text: 'Right to keep and bear arms' },
+        { n: 3, year: 1791, text: 'No forced quartering of soldiers in private homes' },
+        { n: 4, year: 1791, text: 'Protection against unreasonable searches and seizures' },
+        { n: 5, year: 1791, text: 'Due process; no self-incrimination or double jeopardy' },
+        { n: 6, year: 1791, text: 'Right to a speedy public jury trial and to legal counsel' },
+        { n: 7, year: 1791, text: 'Right to a jury trial in civil cases' },
+        { n: 8, year: 1791, text: 'No excessive bail, fines, or cruel and unusual punishment' },
+        { n: 9, year: 1791, text: 'Rights not listed are still retained by the people' },
+        { n: 10, year: 1791, text: 'Powers not given to the federal government are reserved to the states' },
+        { n: 11, year: 1795, text: 'Limits federal-court suits against a state' },
+        { n: 12, year: 1804, text: 'Separate electoral votes for President and Vice President' },
+        { n: 13, year: 1865, text: 'Abolished slavery' },
+        { n: 14, year: 1868, text: 'Citizenship and equal protection under the law' },
+        { n: 15, year: 1870, text: 'Voting rights regardless of race' },
+        { n: 16, year: 1913, text: 'Authorized a federal income tax' },
+        { n: 17, year: 1913, text: 'Direct popular election of U.S. senators' },
+        { n: 18, year: 1919, text: 'Prohibition of alcohol' },
+        { n: 19, year: 1920, text: 'Women’s right to vote' },
+        { n: 20, year: 1933, text: 'Sets start of terms; the “lame-duck” amendment' },
+        { n: 21, year: 1933, text: 'Repealed Prohibition (the 18th)' },
+        { n: 22, year: 1951, text: 'Two-term limit for the President' },
+        { n: 23, year: 1961, text: 'Electoral votes for Washington, D.C.' },
+        { n: 24, year: 1964, text: 'Abolished the poll tax in federal elections' },
+        { n: 25, year: 1967, text: 'Presidential succession and disability' },
+        { n: 26, year: 1971, text: 'Lowered the voting age to 18' },
+        { n: 27, year: 1992, text: 'Delays congressional pay raises until after an election' }
+      ]
     }
   ];
 
