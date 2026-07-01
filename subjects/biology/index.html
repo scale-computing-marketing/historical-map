@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Life Explorer — Biology · Learning Atlas</title>
+<link rel="stylesheet" href="../../core/theme.css">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div id="app">
+
+  <!-- TOP BAR -->
+  <header id="topbar" class="ui">
+    <a class="homelink" href="../../" title="Back to the Learning Atlas hub">← Atlas</a>
+    <div class="brand"><small>Life Explorer</small><span id="brand-title">Animal Cell</span></div>
+    <div class="searchbox">
+      <input id="search" type="text" placeholder="Search organelles, parts…" aria-label="Search" autocomplete="off">
+      <div id="results" class="results"></div>
+    </div>
+    <div class="spacer"></div>
+    <div class="tb-menu">
+      <button class="tb-btn" id="topic-btn" title="Choose a topic">Topic ▾</button>
+      <div class="menu-pop" id="topic-pop"></div>
+    </div>
+    <button class="tb-btn" id="overview-btn">Overview</button>
+    <button class="tb-btn" id="quiz-btn">Quiz</button>
+  </header>
+
+  <!-- STAGE -->
+  <div id="stage">
+    <div id="canvas" role="region" aria-label="Interactive biology diagram"></div>
+    <div class="legend ui" id="legend" aria-live="polite"></div>
+    <div class="hint ui" id="hint">Click any labelled part to learn what it does.</div>
+    <div class="live-instruction ui" id="live-instruction"></div>
+
+    <!-- RAIL -->
+    <aside id="rail" aria-label="Information panel">
+      <div class="rail-head">
+        <div style="flex:1">
+          <div class="rkind ui" id="rkind">Topic</div>
+          <div class="rtitle" id="rtitle">Animal Cell</div>
+        </div>
+        <button class="icon-btn" id="railclose" title="Close">✕</button>
+      </div>
+      <div class="tabs" id="tabs"></div>
+      <div class="rail-body" id="railbody"></div>
+    </aside>
+  </div>
+
+  <!-- QUIZ -->
+  <div id="quiz"><div class="quizcard ui" id="quizcard"></div></div>
+</div>
+
+<script src="../../core/shell.js"></script>
+<script src="data/cell.js"></script>
+<script src="explorer.js"></script>
+</body>
+</html>

@@ -1,0 +1,81 @@
+/* Life Explorer — biology-specific styles (diagram canvas, organelle shapes,
+   category colours, legend). Loaded after core/theme.css.                    */
+:root{
+  --bio-control:#7a5ea8; --bio-energy:#c0574a; --bio-manufacturing:#3f6ea5;
+  --bio-storage:#2f8f88; --bio-cleanup:#b5883a; --bio-structure:#8a8172;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bio-control:#a888d6; --bio-energy:#d1796d; --bio-manufacturing:#6f9bd0;
+    --bio-storage:#5cb6ad; --bio-cleanup:#cfa64f; --bio-structure:#a59c8b;
+  }
+}
+
+#stage{background:var(--page)}
+#canvas{flex:1;min-width:0;display:flex;align-items:center;justify-content:center;padding:22px 28px}
+#canvas svg.bio-diagram{width:100%;height:100%;max-height:100%;display:block}
+
+/* organelle shapes, coloured by category */
+.part{cursor:pointer}
+.part .shape{stroke-width:2;transition:fill .15s ease, stroke-width .12s ease, filter .15s ease}
+.cat-control .shape{fill:var(--bio-control);stroke:var(--bio-control)}
+.cat-energy .shape{fill:var(--bio-energy);stroke:var(--bio-energy)}
+.cat-manufacturing .shape{fill:var(--bio-manufacturing);stroke:var(--bio-manufacturing)}
+.cat-storage .shape{fill:var(--bio-storage);stroke:var(--bio-storage)}
+.cat-cleanup .shape{fill:var(--bio-cleanup);stroke:var(--bio-cleanup)}
+.cat-structure .shape{fill:var(--bio-structure);stroke:var(--bio-structure)}
+.part .shape{fill-opacity:.82}
+/* variants */
+.shape.hollow{fill:none !important;stroke-width:2.5}
+.shape.inner{opacity:.55}
+.shape.inner2{stroke-dasharray:4 4;opacity:.7}
+.shape.stroke{fill:none !important;stroke-width:5;stroke-linecap:round;stroke-linejoin:round}
+.shape.stroke.thick{stroke-width:7}
+.shape.crista{fill:none !important;stroke:var(--page);stroke-width:2.5;opacity:.7}
+.part[data-part="cytoplasm"] .shape{fill-opacity:.14;stroke:none}
+.part[data-part="cell-membrane"]{cursor:pointer}
+.dots circle{fill:var(--bio-manufacturing)}
+.cat-cleanup .dots circle{fill:var(--page)}
+.dots.big circle{fill:var(--bio-manufacturing)}
+
+/* hover + selection */
+.part:hover .shape{filter:brightness(1.12);fill-opacity:.95}
+.part.selected .shape{stroke:var(--ink);stroke-width:3.5}
+.part.selected .shape.stroke{stroke:var(--ink)}
+.part.dim{opacity:.35;transition:opacity .2s}
+
+/* labels */
+.plabel{font-family:var(--ui);font-size:15px;font-weight:600;fill:var(--ink);pointer-events:none;
+  paint-order:stroke;stroke:var(--page);stroke-width:3.5px;stroke-linejoin:round}
+
+/* legend (bottom-left, reuses core .legend look) */
+.legend{position:absolute;left:16px;bottom:16px;background:var(--panel);border:1px solid var(--rule);
+  border-radius:10px;padding:10px 12px;font-family:var(--ui);font-size:12px;color:var(--muted);
+  box-shadow:0 4px 16px rgba(0,0,0,.08);max-width:220px}
+.legend .ttl{font-weight:700;color:var(--ink);margin-bottom:6px;font-size:11px;letter-spacing:.05em;text-transform:uppercase}
+.legend .row{display:flex;align-items:center;gap:8px;margin:4px 0;cursor:default}
+.legend .sw{width:12px;height:12px;border-radius:4px;flex:none}
+.hint{position:absolute;left:50%;top:16px;transform:translateX(-50%);background:var(--panel);
+  border:1px solid var(--rule2);border-radius:18px;padding:7px 16px;font-family:var(--ui);font-size:12.5px;
+  color:var(--muted);box-shadow:0 4px 16px rgba(0,0,0,.1);transition:opacity .5s}
+
+/* part detail extras */
+.analogy{font-family:var(--serif);font-style:italic;font-size:15px;line-height:1.55;color:var(--ink);
+  border-left:3px solid var(--accent);padding:6px 0 6px 14px;margin:0 0 14px}
+.cat-tag{display:inline-block;font-family:var(--ui);font-size:11px;font-weight:700;letter-spacing:.03em;
+  border-radius:12px;padding:2px 10px;color:#fff}
+.cat-tag.control{background:var(--bio-control)} .cat-tag.energy{background:var(--bio-energy)}
+.cat-tag.manufacturing{background:var(--bio-manufacturing)} .cat-tag.storage{background:var(--bio-storage)}
+.cat-tag.cleanup{background:var(--bio-cleanup)} .cat-tag.structure{background:var(--bio-structure)}
+.parts-group{font-family:var(--ui);font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+  color:var(--muted);margin:16px 0 4px}
+.parts-group:first-child{margin-top:0}
+
+/* quiz "click the diagram" peek mode: let clicks reach the canvas */
+#quiz.peek{background:transparent;pointer-events:none;align-items:flex-start}
+#quiz.peek .quizcard{display:none}
+
+@media (max-width:720px){
+  .legend{font-size:11px;max-width:160px}
+  #canvas{padding:10px}
+}
