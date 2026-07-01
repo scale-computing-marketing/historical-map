@@ -8,6 +8,7 @@
   --aux:#b98b62; --neutrality:#b8b09e; --battle:#6e2b2b; --capital:#c9a227; --selected:#1f2d44;
   --union:#3a5e8c; --confederate:#9c8a76; --border:#cdb079;
   --allied:#5f8a6a; --central:#bd6a45; --axis:#9c4a4a;
+  --prussia:#2f3a4a; --german-states:#8f9bab; --italy:#4a7c59; --italian-states:#9bb59f; --austria:#caa15a;
   --ui:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
   --serif:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;
   --rail-w:440px;
@@ -22,6 +23,7 @@
     --aux:#9c7448; --neutrality:#7d7666; --battle:#b25151; --capital:#cda52f; --selected:#9db4d8;
     --union:#5f7fae; --confederate:#b3a087; --border:#c9ab6f;
     --allied:#6f9b7a; --central:#cb7d57; --axis:#c06a6a;
+    --prussia:#6b7890; --german-states:#7c88a0; --italy:#6fa27e; --italian-states:#84a689; --austria:#d8b878;
   }
 }
 *{box-sizing:border-box}
