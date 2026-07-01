@@ -1,8 +1,8 @@
 /* Life Explorer — topic: the Animal Cell in 3-D.
-   A `kind:'embed'` topic: it embeds an interactive 3-D cell model (hosted on
-   Sketchfab, with attribution) as the canvas, while the info rail keeps the
-   organelle glossary and quizzes beside it. Reuses the 2-D cell's `parts` so the
-   two topics stay in sync. Loads AFTER data/cell.js.                          */
+   A `kind:'embed'` topic: it embeds an interactive 3-D animal-cell model (hosted
+   on Sketchfab under CC-BY, with attribution) as the canvas, while the info rail
+   keeps the organelle glossary and quizzes beside it. Reuses the 2-D cell's
+   `parts` so the two topics stay in sync. Loads AFTER data/cell.js.           */
 (function () {
   window.BIO = window.BIO || { topics: {} };
   const cell = window.BIO.topics['cell'] || {};
@@ -17,15 +17,15 @@
   ]);
 
   window.BIO.topics['cell-3d'] = {
-    id: 'cell-3d', name: 'Cell in 3-D', short: 'Cell 3-D', kind: 'embed', icon: '🧫', hideLegend: true,
+    id: 'cell-3d', name: 'Animal Cell (3-D)', short: 'Cell 3-D', kind: 'embed', icon: '🧫', hideLegend: true,
     tagline: 'An interactive 3-D model',
-    intro: 'Drag to rotate the cell, scroll to zoom, and press play to watch it animate. Open the Parts tab to read about each organelle. This model — “Human Cell Animation” by flarar-01 — is embedded from Sketchfab.',
-    embedSrc: 'https://sketchfab.com/models/c09821843c7147dcb97c227be12a2357/embed',
-    embedTitle: 'Human Cell Animation',
+    intro: 'Drag to rotate the cell and scroll to zoom for a close look at the organelles. Open the Parts tab to read what each one does. This 3-D model is embedded from Sketchfab under a Creative Commons licence.',
+    embedSrc: 'https://sketchfab.com/models/737b35f5b779418998d834c28ed15295/embed?autostart=1&ui_theme=dark&ui_hint=0',
+    embedTitle: 'Animal Cell',
     credit: {
-      text: 'Human Cell Animation', author: 'flarar-01',
-      authorUrl: 'https://sketchfab.com/flarar',
-      modelUrl: 'https://sketchfab.com/3d-models/human-cell-animation-c09821843c7147dcb97c227be12a2357'
+      text: 'Animal Cell', author: 'James_Anthony', license: 'CC BY',
+      authorUrl: 'https://sketchfab.com/James_Anthony',
+      modelUrl: 'https://sketchfab.com/3d-models/animal-cell-737b35f5b779418998d834c28ed15295'
     },
     categories: cell.categories || {}, parts, quizzes
   };

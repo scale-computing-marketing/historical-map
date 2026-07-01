@@ -1,0 +1,99 @@
+/* Life Explorer — topic: the Plant Cell in 3-D.
+   A `kind:'embed'` topic embedding a CC-BY plant-cell model from Sketchfab. The
+   info rail carries a plant-cell glossary (with the structures a plant cell has
+   that an animal cell doesn't — a cell wall, chloroplasts and a big central
+   vacuole) plus quizzes. Roles reuse the shared category colours.             */
+(function () {
+  window.BIO = window.BIO || { topics: {} };
+
+  const parts = [
+    { id: 'cell-wall', name: 'Cell wall', category: 'structure',
+      summary: 'A rigid outer layer of cellulose that surrounds the cell membrane, giving the plant cell its fixed shape and support. Animal cells do not have one.',
+      functions: ['Gives the cell a fixed, rigid shape', 'Supports and protects the cell', 'Lets water and small molecules pass through'],
+      facts: [['Made of', 'Cellulose'], ['Only in', 'Plant (and some other) cells'], ['Property', 'Rigid and permeable']],
+      analogy: 'A sturdy cardboard box around the cell.', related: ['cell-membrane', 'vacuole'] },
+    { id: 'cell-membrane', name: 'Cell membrane', category: 'structure',
+      summary: 'A thin layer just inside the cell wall that controls what enters and leaves the cell.',
+      functions: ['Controls what moves in and out', 'Encloses the cytoplasm'],
+      facts: [['Location', 'Inside the cell wall'], ['Property', 'Selectively permeable']],
+      analogy: 'A gatekeeper inside the box.', related: ['cell-wall', 'cytoplasm'] },
+    { id: 'chloroplast', name: 'Chloroplast', category: 'energy',
+      summary: 'The green organelle that captures sunlight and makes food (glucose) through photosynthesis. Its green colour comes from chlorophyll.',
+      functions: ['Carries out photosynthesis', 'Captures light energy with chlorophyll', 'Makes glucose and releases oxygen'],
+      facts: [['Contains', 'Chlorophyll (green)'], ['Only in', 'Plants and algae'], ['Makes', 'Food + oxygen']],
+      analogy: 'A solar-powered kitchen making the plant’s food.', related: ['mitochondria', 'vacuole'] },
+    { id: 'vacuole', name: 'Central vacuole', category: 'storage',
+      summary: 'One large fluid-filled sac that stores water and keeps the cell firm. It can take up most of a plant cell’s volume.',
+      functions: ['Stores water, salts and nutrients', 'Keeps the cell firm (turgor pressure)', 'Helps the plant stay upright'],
+      facts: [['Size', 'Up to ~80–90% of the cell'], ['In plant cells', 'One large central vacuole'], ['Keeps the cell', 'Firm and turgid']],
+      analogy: 'A big water tank that keeps the plant standing tall.', related: ['cell-wall'] },
+    { id: 'nucleus', name: 'Nucleus', category: 'control',
+      summary: 'The control centre of the cell. It stores the DNA and directs the cell’s activities.',
+      functions: ['Stores the genetic material (DNA)', 'Controls the cell’s activities', 'Directs protein building'],
+      facts: [['Contains', 'Chromosomes (DNA)'], ['Wrapped in', 'Nuclear envelope']],
+      analogy: 'The head office of the cell.', related: ['nucleolus'] },
+    { id: 'nucleolus', name: 'Nucleolus', category: 'control',
+      summary: 'A dense region inside the nucleus that makes ribosomes.',
+      functions: ['Makes and assembles ribosomes'],
+      facts: [['Location', 'Inside the nucleus'], ['Builds', 'Ribosomes']],
+      analogy: 'The office that hires the factory workers.', related: ['nucleus', 'ribosomes'] },
+    { id: 'mitochondria', name: 'Mitochondria', category: 'energy',
+      summary: 'Release energy from food through respiration. Plant cells have these as well as chloroplasts.',
+      functions: ['Release energy as ATP', 'Power the cell’s activities'],
+      facts: [['Nickname', 'Powerhouse of the cell'], ['Makes', 'ATP (energy)']],
+      analogy: 'The power station of the cell.', related: ['chloroplast'] },
+    { id: 'rough-er', name: 'Rough endoplasmic reticulum', category: 'manufacturing',
+      summary: 'A folded membrane network studded with ribosomes that processes proteins.',
+      functions: ['Folds and modifies proteins', 'Transports proteins to the Golgi'],
+      facts: [['“Rough” because', 'Covered in ribosomes']],
+      analogy: 'A packing line for new proteins.', related: ['ribosomes', 'golgi'] },
+    { id: 'smooth-er', name: 'Smooth endoplasmic reticulum', category: 'manufacturing',
+      summary: 'A membrane network without ribosomes that makes lipids and fats.',
+      functions: ['Makes lipids and fats', 'Helps process substances'],
+      facts: [['“Smooth” because', 'No ribosomes']],
+      analogy: 'A chemical plant beside the packing line.', related: ['rough-er'] },
+    { id: 'golgi', name: 'Golgi apparatus', category: 'manufacturing',
+      summary: 'A stack of flattened sacs that packages and ships proteins.',
+      functions: ['Sorts and packages proteins', 'Ships products in vesicles'],
+      facts: [['Shape', 'Stacked flattened sacs']],
+      analogy: 'The cell’s post office.', related: ['rough-er'] },
+    { id: 'ribosomes', name: 'Ribosomes', category: 'manufacturing',
+      summary: 'Tiny machines that build proteins from amino acids.',
+      functions: ['Read genetic instructions', 'Assemble proteins'],
+      facts: [['Job', 'Protein synthesis'], ['Made by', 'The nucleolus']],
+      analogy: 'Workers on an assembly line.', related: ['rough-er'] },
+    { id: 'cytoplasm', name: 'Cytoplasm', category: 'structure',
+      summary: 'The jelly-like fluid that fills the cell and holds the organelles.',
+      functions: ['Suspends the organelles', 'Site of many reactions'],
+      facts: [['Mostly', 'Water']],
+      analogy: 'The fluid everything floats in.', related: ['cell-membrane'] },
+  ];
+
+  const quizzes = [
+    { type: 'multiple-choice', prompt: 'Which structure gives a plant cell its rigid shape and is NOT found in animal cells?', options: ['Cell membrane', 'Cell wall', 'Cytoplasm', 'Ribosome'], answer: 'Cell wall',
+      feedback: { correct: 'Correct — the cellulose cell wall gives support.', incorrect: 'It’s the rigid outer layer made of cellulose.' } },
+    { type: 'multiple-choice', prompt: 'Which organelle carries out photosynthesis?', options: ['Mitochondrion', 'Chloroplast', 'Nucleus', 'Vacuole'], answer: 'Chloroplast',
+      feedback: { correct: 'Correct — chloroplasts capture sunlight to make food.', incorrect: 'It’s the green organelle with chlorophyll.' } },
+    { type: 'multiple-choice', prompt: 'What does the large central vacuole mainly do?', options: ['Makes proteins', 'Stores water and keeps the cell firm', 'Releases energy', 'Controls the cell'], answer: 'Stores water and keeps the cell firm',
+      feedback: { correct: 'Correct — it stores water and provides turgor pressure.', incorrect: 'Think about what keeps a plant standing upright.' } },
+    { type: 'multiple-choice', prompt: 'Which of these is found in plant cells but NOT animal cells?', options: ['Mitochondrion', 'Nucleus', 'Chloroplast', 'Ribosome'], answer: 'Chloroplast',
+      feedback: { correct: 'Correct — chloroplasts are unique to plants (and algae).', incorrect: 'Which one does photosynthesis?' } },
+  ];
+
+  window.BIO.topics['plant-cell-3d'] = {
+    id: 'plant-cell-3d', name: 'Plant Cell (3-D)', short: 'Plant Cell', kind: 'embed', icon: '🌱', hideLegend: true,
+    tagline: 'Cell wall, chloroplasts & a big vacuole',
+    intro: 'A plant cell has everything an animal cell has — plus a rigid cell wall, green chloroplasts for photosynthesis, and one large central vacuole. Drag to rotate the model; open the Parts tab to explore each structure.',
+    embedSrc: 'https://sketchfab.com/models/7fe3ac29756a45c6b678804a8da8a760/embed?autostart=1&ui_theme=dark&ui_hint=0',
+    embedTitle: 'Plant CELL',
+    credit: {
+      text: 'Plant CELL', author: 'NaraXR', license: 'CC BY-NC',
+      authorUrl: 'https://sketchfab.com/naratech',
+      modelUrl: 'https://sketchfab.com/3d-models/plant-cell-7fe3ac29756a45c6b678804a8da8a760'
+    },
+    categories: {
+      control: 'Control', energy: 'Energy', manufacturing: 'Manufacturing', storage: 'Storage', structure: 'Structure'
+    },
+    parts, quizzes
+  };
+})();

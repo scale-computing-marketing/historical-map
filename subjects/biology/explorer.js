@@ -23,7 +23,7 @@
           allow="autoplay; fullscreen; xr-spatial-tracking" src="${topic.embedSrc}"></iframe>
         ${c.text ? `<p class="embed-credit"><a href="${c.modelUrl}" target="_blank" rel="noopener nofollow">${c.text}</a>
           by <a href="${c.authorUrl}" target="_blank" rel="noopener nofollow">${c.author}</a>
-          on <a href="https://sketchfab.com" target="_blank" rel="noopener nofollow">Sketchfab</a></p>` : ''}
+          on <a href="https://sketchfab.com" target="_blank" rel="noopener nofollow">Sketchfab</a>${c.license ? ' · ' + c.license : ''}</p>` : ''}
       </div>`;
       return;
     }
