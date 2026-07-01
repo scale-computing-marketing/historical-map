@@ -15,6 +15,18 @@
   /* ---------------- canvas (diagram or custom tool) ---------------- */
   function renderCanvas() {
     const canvas = Atlas.el('canvas');
+    const hintEl = Atlas.el('hint'); if (hintEl) hintEl.style.display = topic.kind === 'diagram' ? '' : 'none';
+    if (topic.kind === 'embed') {
+      const c = topic.credit || {};
+      canvas.innerHTML = `<div class="embed3d">
+        <iframe title="${topic.embedTitle || topic.name}" frameborder="0" allowfullscreen
+          allow="autoplay; fullscreen; xr-spatial-tracking" src="${topic.embedSrc}"></iframe>
+        ${c.text ? `<p class="embed-credit"><a href="${c.modelUrl}" target="_blank" rel="noopener nofollow">${c.text}</a>
+          by <a href="${c.authorUrl}" target="_blank" rel="noopener nofollow">${c.author}</a>
+          on <a href="https://sketchfab.com" target="_blank" rel="noopener nofollow">Sketchfab</a></p>` : ''}
+      </div>`;
+      return;
+    }
     if (topic.kind === 'tool' && typeof topic.mount === 'function') {
       canvas.innerHTML = '';
       topic.mount(canvas, { el: Atlas.el, selectPart, openRail: () => rail.open() });
@@ -64,11 +76,14 @@
   function overview() {
     const legend = Object.entries(topic.categories || {}).map(([k, label]) =>
       `<div class="chip" style="border-color:var(--bio-${k})">${label}</div>`).join('');
-    const hint = topic.kind === 'tool'
-      ? 'Use the tool on the left. Open the Parts tab for the key terms.'
-      : 'Click any labelled part on the diagram — or open the Parts tab — to see what it does.';
+    const hint = topic.kind === 'embed'
+      ? 'Drag to rotate the 3-D model and press play. Open the Parts tab to read about each organelle.'
+      : topic.kind === 'tool'
+        ? 'Use the tool on the left. Open the Parts tab for the key terms.'
+        : 'Click any labelled part on the diagram — or open the Parts tab — to see what it does.';
+    const heading = topic.kind === 'tool' ? 'Key terms' : (topic.kind === 'embed' ? 'Organelles by role' : 'Parts by role');
     return `<p class="lead">${topic.intro || ''}</p>
-      <h3>${topic.kind === 'tool' ? 'Key terms' : 'Parts by role'}</h3><div class="chips">${legend}</div>
+      <h3>${heading}</h3><div class="chips">${legend}</div>
       <p class="note">${hint}</p>`;
   }
   function partsList() {
@@ -142,7 +157,7 @@
     Atlas.el('quiz-btn').onclick = () => quiz.run(topic.quizzes || []);
     Atlas.el('overview-btn').onclick = () => { state.tab = 'overview'; state.partId = null; rail.open(); render(); highlightSelected(); };
     Atlas.el('canvas').addEventListener('click', e => {
-      if (topic.kind === 'tool') return;                 // tools manage their own clicks
+      if (topic.kind !== 'diagram') return;              // tools/embeds manage their own area
       if (e.target.closest('[data-part]')) return;       // a part handled it
       if (!quiz.isAwaitingClick()) clearSelection();
     });
