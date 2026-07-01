@@ -26,18 +26,10 @@
 #stage{background:var(--page)}
 /* The three learning views (map / lesson / browse) share this pane, which sits
    beside the docked rail. Views stack with position:absolute (see .m-view). */
-#bio-main{position:relative;flex:1;min-width:0;display:flex}
+/* The three learning views (map / lesson / browse) fill the stage; the rail is
+   the shared drawer (overlay for map/lesson, docked via .rail-docked in browse). */
+#bio-main{position:absolute;inset:0;display:flex}
 #canvas{flex:1;min-width:0;display:flex;align-items:center;justify-content:center;padding:22px 28px;overflow:auto}
-
-/* Biology keeps the info rail permanently docked as a side panel (not a
-   slide-in drawer). On narrow screens it falls back to the overlay drawer. */
-@media (min-width:721px){
-  /* z-index below the top bar (20) so its dropdowns (Explore, search) open over
-     the docked rail instead of behind it. */
-  #rail{position:relative;transform:none !important;box-shadow:none;height:100%;flex:none;
-    border-left:1px solid var(--rule);z-index:5}
-  #railclose{display:none}
-}
 #canvas svg.bio-diagram{width:100%;height:100%;max-height:100%;display:block}
 
 /* organelle shapes, coloured by category */
@@ -200,6 +192,9 @@ td.ph-brown{background:var(--bio-brown)} td.ph-blue{background:var(--bio-blue)}
   --m-2:#e0a52e; --m-3:#c85b8e; --m-4:#3f8ea5; --m-faint:#c3d3c8;
   --m-good:#3fae5a; --m-good-bg:rgba(63,174,90,.14);
   --m-bad:#d15a52; --m-bad-bg:rgba(209,90,82,.12);
+  /* subject chrome hue for the shared shell */
+  --brand:var(--m-accent); --brand-ink:var(--m-accent-ink);
+  --brand-weak:rgba(47,143,107,.12); --brand-ring:rgba(47,143,107,.22);
   /* strand colours (map node accents) — one per curriculum thread */
   --s-foundations:#6b8e4e; --s-cells:#3f6ea5; --s-processes:#2f8f88;
   --s-division:#b05a7a; --s-genetics:#7a5ea8; --s-evolution:#c0574a;
@@ -228,16 +223,32 @@ td.ph-brown{background:var(--bio-brown)} td.ph-blue{background:var(--bio-blue)}
 .m-btn.tiny{padding:4px 10px;font-size:15px;border-radius:8px}
 
 /* =============================================================== MAP ===== */
-.m-map-scroll{position:absolute;inset:0;overflow:auto;background:
+.m-map-host{position:absolute;inset:0}
+.m-map-scroll{position:absolute;inset:0;overflow:auto;overscroll-behavior:contain;
+  display:grid;place-items:center;background:
   radial-gradient(circle at 1px 1px, var(--rule) 1px, transparent 0) 0 0/26px 26px, var(--page)}
+.m-map-host.is-overview .m-map-scroll{display:none}
 .m-map-inner{position:relative}
 .m-map-edges{position:absolute;top:0;left:0;pointer-events:none;overflow:visible}
 .m-edge{fill:none;stroke:var(--rule2);stroke-width:2;stroke-dasharray:4 5;opacity:.5}
 .m-edge.met{stroke:var(--m-accent);stroke-dasharray:none;opacity:.7;stroke-width:2.5}
-.m-col-head{position:absolute;top:12px;font-family:var(--ui);width:186px;text-align:center}
-.m-col-g{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
-  color:var(--muted);background:var(--panel);border:1px solid var(--rule);border-radius:20px;padding:4px 12px}
-.m-col-name{display:block;font-size:11px;color:var(--muted);margin-top:4px;font-weight:600}
+
+/* overview mode: every unit as a progress card */
+.m-overview{position:absolute;inset:0;display:none;padding:var(--sp-6);overflow-y:auto;
+  grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:var(--sp-4);align-content:start;background:var(--page)}
+.m-map-host.is-overview .m-overview{display:grid}
+.m-ucard{text-align:left;background:var(--panel);border:1px solid var(--rule);border-radius:var(--r-xl);
+  padding:var(--sp-4);font-family:var(--serif);height:max-content;
+  transition:transform var(--dur-2) var(--ease-out),box-shadow var(--dur-2) var(--ease),border-color var(--dur-2) var(--ease)}
+.m-ucard:hover{transform:translateY(-3px);box-shadow:var(--sh-3);border-color:var(--m-accent)}
+.m-ucard-top{display:flex;align-items:center;gap:var(--sp-2);margin-bottom:4px}
+.m-ucard-top h3{font-size:var(--fs-lg);margin:0;flex:1}
+.m-ucard-meta{font-family:var(--ui);font-size:var(--fs-sm);color:var(--muted);margin-bottom:12px}
+.m-ucard-mini{display:flex;gap:4px;margin-bottom:12px}
+.m-ucard-mini i{flex:1;height:6px;border-radius:var(--r-pill);background:var(--panel2)}
+.m-ucard-mini i.on{background:var(--m-good)}
+.m-ucard-mini i.cur{background:var(--m-accent)}
+.m-ucard-foot{display:flex;align-items:center;gap:var(--sp-2);font-family:var(--ui);font-size:var(--fs-sm);color:var(--muted)}
 
 .m-node{position:absolute;text-align:left;background:var(--panel);border:1.5px solid var(--rule2);
   border-radius:14px;padding:9px 12px;display:flex;flex-direction:column;gap:3px;overflow:hidden;
