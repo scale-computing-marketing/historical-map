@@ -67,6 +67,41 @@
       functions: ['Suspends the organelles', 'Site of many reactions'],
       facts: [['Mostly', 'Water']],
       analogy: 'The fluid everything floats in.', related: ['cell-membrane'] },
+    { id: 'nuclear-envelope', name: 'Nuclear envelope', category: 'control',
+      summary: 'The double membrane that surrounds the nucleus, separating the DNA from the rest of the cell. It is dotted with nuclear pores.',
+      functions: ['Encloses and protects the DNA', 'Controls what passes in and out of the nucleus'],
+      facts: [['Layers', 'A double membrane'], ['Pierced by', 'Nuclear pores']],
+      analogy: 'The wall around the head office.', related: ['nucleus', 'nucleoplasm'] },
+    { id: 'nucleoplasm', name: 'Nucleoplasm', category: 'control',
+      summary: 'The jelly-like fluid inside the nucleus where the chromosomes and nucleolus sit.',
+      functions: ['Holds the chromosomes', 'Where DNA is copied and read'],
+      facts: [['Location', 'Inside the nuclear envelope']],
+      analogy: 'The fluid inside the head office.', related: ['nucleus', 'nucleolus'] },
+    { id: 'peroxisome', name: 'Peroxisome', category: 'cleanup',
+      summary: 'A small organelle that breaks down fatty acids and neutralises toxic hydrogen peroxide.',
+      functions: ['Breaks down fatty acids', 'Detoxifies harmful hydrogen peroxide'],
+      facts: [['Contains', 'Oxidase & catalase enzymes']],
+      analogy: 'A small chemical safety unit.', related: ['lysosome'] },
+    { id: 'lysosome', name: 'Lysosome', category: 'cleanup',
+      summary: 'A sac of digestive enzymes that breaks down waste and worn-out parts. Rare or absent in most mature plant cells (the vacuole often does this job).',
+      functions: ['Digests waste and debris', 'Recycles worn-out organelles'],
+      facts: [['Contains', 'Digestive enzymes'], ['In plants', 'Uncommon — the vacuole often digests instead']],
+      analogy: 'The clean-up crew.', related: ['vacuole', 'peroxisome'] },
+    { id: 'vesicle', name: 'Vesicle', category: 'manufacturing',
+      summary: 'A small membrane sac that carries and stores materials, shuttling them around and out of the cell.',
+      functions: ['Transports materials within the cell', 'Delivers products to the membrane for export'],
+      facts: [['Shape', 'A tiny membrane bubble'], ['Made by', 'The ER and Golgi']],
+      analogy: 'A delivery van inside the cell.', related: ['golgi'] },
+    { id: 'plasmodesmata', name: 'Plasmodesmata', category: 'structure',
+      summary: 'Tiny channels that pass through the cell wall to connect neighbouring plant cells, letting them share water, nutrients and signals.',
+      functions: ['Connect adjacent plant cells', 'Let cells exchange water, food and signals'],
+      facts: [['Pass through', 'The cell wall'], ['Only in', 'Plant cells']],
+      analogy: 'Doorways between neighbouring rooms.', related: ['cell-wall'] },
+    { id: 'cytoskeleton', name: 'Cytoskeleton', category: 'structure',
+      summary: 'A network of protein filaments that gives the cell its shape and helps move organelles and materials inside it.',
+      functions: ['Supports the cell’s shape', 'Moves organelles and materials internally'],
+      facts: [['Made of', 'Protein filaments']],
+      analogy: 'The scaffolding and conveyor belts of the cell.', related: ['cytoplasm'] },
   ];
 
   const quizzes = [
@@ -92,7 +127,7 @@
       modelUrl: 'https://sketchfab.com/3d-models/plant-cell-7fe3ac29756a45c6b678804a8da8a760'
     },
     categories: {
-      control: 'Control', energy: 'Energy', manufacturing: 'Manufacturing', storage: 'Storage', structure: 'Structure'
+      control: 'Control', energy: 'Energy', manufacturing: 'Manufacturing', storage: 'Storage', structure: 'Structure', cleanup: 'Cleanup'
     },
     parts, quizzes
   };
