@@ -29,7 +29,10 @@
 /* Biology keeps the info rail permanently docked as a side panel (not a
    slide-in drawer). On narrow screens it falls back to the overlay drawer. */
 @media (min-width:721px){
-  #rail{position:relative;transform:none !important;box-shadow:none;height:100%;flex:none;border-left:1px solid var(--rule)}
+  /* z-index below the top bar (20) so its dropdowns (Topic, search) open over
+     the docked rail instead of behind it. */
+  #rail{position:relative;transform:none !important;box-shadow:none;height:100%;flex:none;
+    border-left:1px solid var(--rule);z-index:5}
   #railclose{display:none}
   .hint{left:calc(50% - var(--rail-w) / 2)}
 }
