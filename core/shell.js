@@ -139,4 +139,65 @@
     input.addEventListener('keydown', e => { if (e.key === 'Escape') { input.value = ''; close(); } });
     document.addEventListener('click', e => { if (!resultsEl.contains(e.target) && e.target !== input) close(); });
   };
+
+  const esc = s => String(s == null ? '' : s).replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]));
+
+  /* Command palette (⌘K). Give it the .la-cmd root (with #cmd-input + #cmd-list).
+     provider(query) -> [{ sec, items:[{icon,label,sub,onPick}] }]. Full keyboard
+     model: type to filter, ↑/↓ to move, Enter to pick, Esc / ⌘K to close.        */
+  Atlas.CommandPalette = function (root, opts) {
+    opts = opts || {};
+    const input = root.querySelector(opts.inputSel || '#cmd-input');
+    const list = root.querySelector(opts.listSel || '#cmd-list');
+    let flat = [], sel = 0;
+    function render() {
+      const q = input.value.trim();
+      const groups = opts.provider(q) || [];
+      flat = []; let html = '';
+      groups.forEach(g => {
+        if (!g.items || !g.items.length) return;
+        html += `<div class="la-cmd-sec">${esc(g.sec)}</div>`;
+        g.items.forEach(it => {
+          const i = flat.length; flat.push(it);
+          html += `<button class="la-cmd-item" data-i="${i}"><span class="ic">${it.icon || '◈'}</span>`
+            + `<span class="nm">${esc(it.label)}</span>${it.sub ? `<span class="sub">${esc(it.sub)}</span>` : ''}</button>`;
+        });
+      });
+      list.innerHTML = flat.length ? html : `<div class="la-cmd-empty">No matches for “${esc(q)}”.</div>`;
+      sel = 0; highlight();
+      list.querySelectorAll('[data-i]').forEach(b => b.onclick = () => pick(+b.dataset.i));
+    }
+    function highlight() {
+      list.querySelectorAll('.la-cmd-item').forEach((b, i) => b.classList.toggle('sel', i === sel));
+      const el = list.querySelector('.la-cmd-item.sel'); if (el) el.scrollIntoView({ block: 'nearest' });
+    }
+    function move(d) { if (flat.length) { sel = (sel + d + flat.length) % flat.length; highlight(); } }
+    function pick(i) { const it = flat[i]; if (it && it.onPick) { close(); it.onPick(); } }
+    function open() { root.classList.add('open'); input.value = ''; render(); setTimeout(() => input.focus(), 20); }
+    function close() { root.classList.remove('open'); }
+    function toggle() { root.classList.contains('open') ? close() : open(); }
+    input.addEventListener('input', render);
+    input.addEventListener('keydown', e => {
+      if (e.key === 'ArrowDown') { e.preventDefault(); move(1); }
+      else if (e.key === 'ArrowUp') { e.preventDefault(); move(-1); }
+      else if (e.key === 'Enter') { e.preventDefault(); pick(sel); }
+      else if (e.key === 'Escape') { e.preventDefault(); close(); }
+    });
+    root.addEventListener('click', e => { if (e.target === root) close(); });
+    document.addEventListener('keydown', e => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); toggle(); }
+    });
+    return { open, close, toggle, isOpen: () => root.classList.contains('open') };
+  };
+
+  /* Wire the shell chrome: collapse the sidebar, toggle the mobile slide-over,
+     and close things when the scrim is tapped. */
+  Atlas.wireShell = function (opts) {
+    opts = opts || {};
+    const shell = opts.shell;
+    if (opts.collapseBtn) opts.collapseBtn.onclick = () => shell.classList.toggle('collapsed');
+    if (opts.menuBtn) opts.menuBtn.onclick = () => shell.classList.toggle('nav-open');
+    if (opts.scrim) opts.scrim.onclick = () => { shell.classList.remove('nav-open'); if (opts.onScrimClick) opts.onScrimClick(); };
+    return { openNav: () => shell.classList.add('nav-open'), closeNav: () => shell.classList.remove('nav-open') };
+  };
 })();
