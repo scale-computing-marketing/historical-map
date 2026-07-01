@@ -12,6 +12,8 @@
 # Node (in case tooling is added later)
 node_modules/
 
-# Licensed 3D assets — do NOT commit (redistribution of purchased models)
+# Raw purchased 3D source files (OBJ/FBX/BLEND/textures) — not committed
 /_source/
-subjects/biology/assets/
+# Note: the converted .glb models in subjects/biology/assets/ ARE committed so
+# GitHub Pages can serve them — used in-app under the model's royalty-free licence
+# (which permits application use; it does not permit reselling the raw model).
