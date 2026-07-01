@@ -118,6 +118,9 @@
 
 /* interactive 3-D model (Google model-viewer + clickable hotspots) */
 model-viewer.mv{width:100%;height:100%;background:transparent;--poster-color:transparent}
+.mv-fallback{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);max-width:460px;text-align:center;
+  font-size:13px;line-height:1.6}
+.mv-fallback code{background:var(--panel2);padding:1px 5px;border-radius:5px;font-size:12px}
 .mv-hotspot{--size:20px;width:var(--size);height:var(--size);border:0;padding:0;background:none;cursor:pointer;
   border-radius:50%;position:relative}
 .mv-hotspot .mv-dot{display:block;width:16px;height:16px;margin:2px;border-radius:50%;background:var(--accent);

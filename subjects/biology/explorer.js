@@ -29,6 +29,15 @@
         ${topic.credit && topic.credit.text ? `<p class="embed-credit"><a href="${topic.credit.modelUrl}" target="_blank" rel="noopener nofollow">${topic.credit.text}</a>${topic.credit.author ? ' · ' + topic.credit.author : ''}${topic.credit.license ? ' · ' + topic.credit.license : ''}</p>` : ''}`;
       canvas.querySelectorAll('.mv-hotspot').forEach(b =>
         b.addEventListener('click', e => { e.stopPropagation(); selectPart(b.getAttribute('data-part')); }));
+      // Diagnostics: turn a silent blank into an explanation of what failed.
+      const mv = canvas.querySelector('model-viewer');
+      const fail = msg => { if (canvas.querySelector('.mv-fallback')) return;
+        const d = document.createElement('div'); d.className = 'mv-fallback note'; d.innerHTML = msg; canvas.appendChild(d); };
+      mv.addEventListener('error', () => fail(`Couldn’t load the 3-D model <code>${topic.modelSrc}</code>. Check the file exists and that you’re viewing over <b>http://</b> (a local server), not opening the file directly.`));
+      setTimeout(() => {
+        if (!customElements.get('model-viewer')) fail('The 3-D viewer script (<code>vendor/model-viewer.min.js</code>) didn’t load. Serve this folder over <b>http://</b> — module scripts are blocked on <code>file://</code>.');
+        else if (mv && !mv.loaded) fail('The 3-D viewer loaded but the model didn’t render — your browser may have <b>WebGL</b> disabled or unavailable.');
+      }, 6000);
       return;
     }
     if (topic.kind === 'embed') {
