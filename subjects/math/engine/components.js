@@ -686,4 +686,144 @@
     p1();
   } });
 
+  /* ========================================================= EQUATION BALANCE ===
+     Solve ax + b = c on a balance scale: do the SAME inverse operation to both
+     sides and watch it stay balanced until x is alone. Teaches that solving keeps
+     equality, not "move things across". Guided (only the correct next step is
+     offered — control of error). config: { rounds, maxA, maxX, maxB }           */
+  R('equationBalance', { title: 'Balance the equation', mount(host, cfg, ctx) {
+    cfg = Object.assign({ rounds: 3, maxA: 4, maxX: 6, maxB: 8 }, cfg);
+    let round = 0;
+    const info = U.el('p', 'm-prompt'); host.appendChild(info);
+    const stage = U.el('div', 'm-eqb-stage'); host.appendChild(stage);
+    const units = (n) => U.range(n).map(() => `<span class="m-eqb-tile u"></span>`).join('');
+    const xs = (n) => U.range(n).map(() => `<span class="m-eqb-x">x</span>`).join('');
+    function newRound() {
+      const a = U.rand(2, cfg.maxA), x = U.rand(1, cfg.maxX), b = U.rand(1, cfg.maxB), c = a * x + b;
+      info.innerHTML = 'Do the same to <b>both sides</b> until <b>x</b> is alone. The scale must stay balanced.';
+      let step = 0;   // 0 need −b · 1 need ÷a · 2 solved
+      function render() {
+        const eq = step === 0 ? `${a}x + ${b} = ${c}` : step === 1 ? `${a}x = ${c - b}` : `x = ${x}`;
+        const leftX = step < 2 ? a : 1, leftU = step === 0 ? b : 0, rightU = step === 0 ? c : step === 1 ? c - b : x;
+        stage.innerHTML = `
+          <div class="m-eqb-eq">${eq}</div>
+          <div class="m-eqb-scale">
+            <div class="m-eqb-pan"><div class="m-eqb-items">${xs(leftX)}${units(leftU)}</div><div class="m-eqb-lab">left</div></div>
+            <div class="m-eqb-fulcrum">⟺</div>
+            <div class="m-eqb-pan"><div class="m-eqb-items">${units(rightU)}</div><div class="m-eqb-lab">right</div></div>
+          </div>
+          <div class="m-eqb-ops"></div>`;
+        const ops = stage.querySelector('.m-eqb-ops');
+        if (step === 0) {
+          const btn = U.el('button', 'm-btn', `− ${b} from both sides`);
+          btn.onclick = () => { step = 1; ctx.count('equationBalance'); ctx.feedback(`Take ${b} off each side — still balanced.`, 'ok'); render(); };
+          ops.appendChild(btn);
+        } else if (step === 1) {
+          const btn = U.el('button', 'm-btn', `÷ ${a} on both sides`);
+          btn.onclick = () => {
+            step = 2; ctx.count('equationBalance'); ctx.attempt(true);
+            ctx.feedback(`Split each side into ${a} equal groups → x = ${x}.`, 'ok'); render();
+            round++; ctx.progress(round, cfg.rounds);
+            if (round >= cfg.rounds) setTimeout(ctx.solved, 950); else setTimeout(newRound, 1150);
+          };
+          ops.appendChild(btn);
+        }
+      }
+      render();
+    }
+    ctx.progress(0, cfg.rounds); newRound();
+  } });
+
+  /* ============================================================= LINE GRAPHER ===
+     A live coordinate grid for y = mx + b. Modes:
+       'explore' — step m and b to build a named target line (feel slope & intercept)
+       'read'    — a line is drawn; read off its slope, then its y-intercept
+       'system'  — two lines drawn; click the lattice point where they cross
+     config: { mode, rounds, G }                                                 */
+  R('lineGrapher', { title: 'Line grapher', mount(host, cfg, ctx) {
+    cfg = Object.assign({ mode: 'explore', rounds: 3, G: 6 }, cfg);
+    const G = cfg.G, size = 320, pad = 22, scale = (size - 2 * pad) / (2 * G);
+    const px = x => pad + (x + G) * scale, py = y => size - pad - (y + G) * scale;
+    let round = 0;
+    const info = U.el('p', 'm-prompt'); host.appendChild(info);
+    const stage = U.el('div', 'm-lg-stage'); host.appendChild(stage);
+    const eq = (m, b) => (m === 1 ? 'x' : m === -1 ? '−x' : m + 'x') + (b > 0 ? ` + ${b}` : b < 0 ? ` − ${-b}` : '');
+
+    function grid(extra) {
+      const L = [];
+      for (let i = -G; i <= G; i++) { L.push(`<line x1="${px(i)}" y1="${py(-G)}" x2="${px(i)}" y2="${py(G)}" class="m-lg-grid"/>`); L.push(`<line x1="${px(-G)}" y1="${py(i)}" x2="${px(G)}" y2="${py(i)}" class="m-lg-grid"/>`); }
+      L.push(`<line x1="${px(-G)}" y1="${py(0)}" x2="${px(G)}" y2="${py(0)}" class="m-lg-axis"/>`);
+      L.push(`<line x1="${px(0)}" y1="${py(-G)}" x2="${px(0)}" y2="${py(G)}" class="m-lg-axis"/>`);
+      for (let i = -G; i <= G; i += 2) { if (!i) continue; L.push(`<text x="${px(i)}" y="${py(0) + 13}" class="m-lg-t">${i}</text>`); L.push(`<text x="${px(0) - 12}" y="${py(i) + 4}" class="m-lg-t">${i}</text>`); }
+      const clip = `<clipPath id="lgclip"><rect x="${px(-G)}" y="${py(G)}" width="${2 * G * scale}" height="${2 * G * scale}"/></clipPath>`;
+      return `<svg viewBox="0 0 ${size} ${size}" class="m-lg"><defs>${clip}</defs>${L.join('')}${extra || ''}</svg>`;
+    }
+    const line = (m, b, cls) => `<line x1="${px(-G)}" y1="${py(m * -G + b)}" x2="${px(G)}" y2="${py(m * G + b)}" class="m-lg-line ${cls || ''}" clip-path="url(#lgclip)"/>`;
+    const pt = (x, y, cls) => `<circle cx="${px(x)}" cy="${py(y)}" r="5" class="m-lg-pt ${cls || ''}"/>`;
+
+    function explore() {
+      const tm = U.pick([-3, -2, -1, 1, 2, 3]), tb = U.rand(-4, 4);
+      let m = 0, b = 0;
+      info.innerHTML = `Build the line <b>y = ${eq(tm, tb)}</b> with the steppers.`;
+      (function render() {
+        stage.innerHTML = grid(line(m, b, 'live') + pt(0, b, 'int')) + `
+          <div class="m-lg-ctrls">
+            <div class="m-lg-ctrl"><span>slope m</span><button data-d="m-">−</button><b>${m}</b><button data-d="m+">+</button></div>
+            <div class="m-lg-ctrl"><span>intercept b</span><button data-d="b-">−</button><b>${b}</b><button data-d="b+">+</button></div>
+          </div><div class="m-lg-eq">y = ${eq(m, b)}</div>`;
+        stage.querySelectorAll('[data-d]').forEach(btn => btn.onclick = () => {
+          const d = btn.dataset.d;
+          if (d === 'm-' && m > -5) m--; else if (d === 'm+' && m < 5) m++;
+          else if (d === 'b-' && b > -6) b--; else if (d === 'b+' && b < 6) b++;
+          ctx.count('lineGrapher');
+          if (m === tm && b === tb) { ctx.attempt(true); ctx.feedback(`That's y = ${eq(tm, tb)} — slope ${tm}, crossing y at ${tb}.`, 'ok'); round++; ctx.progress(round, cfg.rounds); if (round >= cfg.rounds) setTimeout(ctx.solved, 800); else setTimeout(explore, 950); }
+          else render();
+        });
+      })();
+    }
+
+    function read() {
+      const m = U.pick([-3, -2, -1, 1, 2, 3]), b = U.rand(-4, 4);
+      info.innerHTML = `Read the line. What is its <b>slope</b> (rise ÷ run)?`;
+      stage.innerHTML = grid(line(m, b, 'live') + pt(0, b, 'int'));
+      answerField(stage, { label: 'slope m =', onCheck(v) {
+        const ok = +v === m; ctx.attempt(ok, (!ok && +v === -m) ? { misconception: 'Slope sign flipped — a line falling left-to-right has a negative slope' } : null); ctx.count('lineGrapher');
+        ctx.feedback(ok ? 'Yes — now read where it crosses the y-axis.' : 'Slope = boxes up ÷ boxes across (down is negative).', ok ? 'ok' : 'no');
+        if (ok) askB(m, b);
+      } });
+    }
+    function askB(m, b) {
+      info.innerHTML = `Good — slope ${m}. Where does it cross the <b>y-axis</b> (b)?`;
+      stage.innerHTML = grid(line(m, b, 'live') + pt(0, b, 'int'));
+      answerField(stage, { label: 'y-intercept b =', onCheck(v) {
+        const ok = +v === b; ctx.attempt(ok); ctx.count('lineGrapher');
+        ctx.feedback(ok ? `Right — y = ${eq(m, b)}.` : 'Look where the line meets the vertical axis.', ok ? 'ok' : 'no');
+        if (ok) { round++; ctx.progress(round, cfg.rounds); if (round >= cfg.rounds) setTimeout(ctx.solved, 750); else setTimeout(read, 950); }
+      } });
+    }
+
+    function system() {
+      const ix = U.rand(-3, 3), iy = U.rand(-3, 3);
+      let m1 = U.pick([-2, -1, 1, 2]), m2; do { m2 = U.pick([-2, -1, 1, 2, 3]); } while (m2 === m1);
+      const b1 = iy - m1 * ix, b2 = iy - m2 * ix;
+      info.innerHTML = `Two lines are graphed. <b>Click where they cross</b> — that point solves the system.`;
+      const hits = [];
+      for (let x = -G; x <= G; x++) for (let y = -G; y <= G; y++) hits.push(`<circle cx="${px(x)}" cy="${py(y)}" r="9" class="m-lg-hit" data-x="${x}" data-y="${y}"/>`);
+      stage.innerHTML = grid(line(m1, b1, 'l1') + line(m2, b2, 'l2') + hits.join(''));
+      const svg = stage.querySelector('svg');
+      svg.addEventListener('click', e => {
+        const h = e.target.closest('.m-lg-hit'); if (!h) return;
+        const x = +h.dataset.x, y = +h.dataset.y, ok = x === ix && y === iy;
+        ctx.attempt(ok); ctx.count('lineGrapher');
+        svg.querySelectorAll('.m-lg-guess').forEach(n => n.remove());
+        const c = document.createElementNS('http://www.w3.org/2000/svg', 'circle'); c.setAttribute('cx', px(x)); c.setAttribute('cy', py(y)); c.setAttribute('r', 6); c.setAttribute('class', 'm-lg-guess ' + (ok ? 'ok' : 'no')); svg.appendChild(c);
+        ctx.feedback(ok ? `Yes — they cross at (${ix}, ${iy}): x = ${ix}, y = ${iy}.` : `Not there — find the one point that sits on BOTH lines.`, ok ? 'ok' : 'no');
+        if (ok) { round++; ctx.progress(round, cfg.rounds); if (round >= cfg.rounds) setTimeout(ctx.solved, 850); else setTimeout(system, 1050); }
+      });
+    }
+
+    ctx.progress(0, cfg.rounds);
+    ({ explore, read, system }[cfg.mode] || explore)();
+  } });
+
 })();

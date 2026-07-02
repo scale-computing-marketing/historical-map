@@ -366,6 +366,47 @@
 .m-cp-guess.ok{fill:var(--m-good)}
 .m-cp-guess.no{fill:var(--m-bad)}
 
+/* ==================================================== EQUATION BALANCE ==== */
+.m-eqb-stage{display:flex;flex-direction:column;align-items:center;gap:16px}
+.m-eqb-eq{font-family:var(--ui);font-size:26px;font-weight:700;color:var(--m-accent);letter-spacing:.02em}
+.m-eqb-scale{display:flex;align-items:stretch;justify-content:center;gap:10px;width:100%;max-width:460px}
+.m-eqb-pan{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;gap:6px;
+  background:var(--panel2);border:1px solid var(--rule2);border-radius:12px;padding:12px 8px;min-height:96px;justify-content:center}
+.m-eqb-items{display:flex;flex-wrap:wrap;gap:5px;justify-content:center;align-items:center;min-height:34px}
+.m-eqb-lab{font-family:var(--ui);font-size:10.5px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+.m-eqb-x{display:grid;place-items:center;width:34px;height:34px;border-radius:8px;background:var(--m-accent);color:var(--m-accent-ink);
+  font-family:var(--ui);font-weight:700;font-size:16px;font-style:italic;box-shadow:0 1px 2px rgba(0,0,0,.2)}
+.m-eqb-tile.u{width:20px;height:20px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#ffe9a8,#e0a92a 68%,#b8860b);box-shadow:0 1px 1px rgba(0,0,0,.22)}
+.m-eqb-fulcrum{display:grid;place-items:center;font-size:22px;color:var(--muted)}
+.m-eqb-ops{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;min-height:20px}
+
+/* ======================================================== LINE GRAPHER ==== */
+.m-lg-stage{display:flex;flex-direction:column;align-items:center;gap:12px}
+.m-lg{width:320px;max-width:100%;height:auto;touch-action:manipulation}
+.m-lg-grid{stroke:var(--rule);stroke-width:1}
+.m-lg-axis{stroke:var(--ink);stroke-width:1.5}
+.m-lg-t{fill:var(--muted);font-family:var(--ui);font-size:9px;text-anchor:middle}
+.m-lg-line{stroke:var(--m-accent);stroke-width:3;stroke-linecap:round}
+.m-lg-line.live{stroke:var(--m-accent)}
+.m-lg-line.target{stroke:var(--m-faint);stroke-width:5;stroke-dasharray:2 6}
+.m-lg-line.l1{stroke:var(--m-accent)}
+.m-lg-line.l2{stroke:var(--m-3)}
+.m-lg-pt{fill:var(--m-2)}
+.m-lg-pt.int{fill:var(--m-2)}
+.m-lg-hit{fill:transparent;cursor:pointer}
+.m-lg-hit:hover{fill:var(--brand-ring)}
+.m-lg-guess.ok{fill:var(--m-good);stroke:var(--panel);stroke-width:2}
+.m-lg-guess.no{fill:var(--m-bad);stroke:var(--panel);stroke-width:2}
+.m-lg-ctrls{display:flex;gap:14px;flex-wrap:wrap;justify-content:center}
+.m-lg-ctrl{display:flex;align-items:center;gap:8px;font-family:var(--ui);font-size:13px;color:var(--muted);
+  background:var(--panel2);border:1px solid var(--rule2);border-radius:12px;padding:6px 10px}
+.m-lg-ctrl span{min-width:64px}
+.m-lg-ctrl b{min-width:24px;text-align:center;font-size:16px;color:var(--ink)}
+.m-lg-ctrl button{width:30px;height:30px;border-radius:8px;border:1px solid var(--m-accent);background:var(--panel);
+  color:var(--m-accent);font-size:18px;font-weight:700;line-height:1}
+.m-lg-ctrl button:hover{background:var(--m-accent);color:var(--m-accent-ink)}
+.m-lg-eq{font-family:var(--ui);font-size:19px;font-weight:700;color:var(--m-accent)}
+
 /* ======================================================== PROBLEM SET ===== */
 .m-ps-stage{display:flex;flex-direction:column;align-items:center}
 .m-ps-opts{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
