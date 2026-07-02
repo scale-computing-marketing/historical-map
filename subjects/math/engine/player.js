@@ -43,13 +43,13 @@
   /* Player controller. host = the #lesson element. onExit() returns to the map. */
   function Player(host, opts) {
     opts = opts || {};
-    let lesson, concept, flow, idx, maxIdx, run, mountedDestroy = null, startTime = 0;
+    let lesson, concept, flow, idx, run, mountedDestroy = null, startTime = 0;
 
     function start(conceptId) {
       lesson = LESSONS[conceptId]; concept = Graph.get(conceptId);
       if (!lesson) { host.innerHTML = `<div class="m-lesson-empty note">This lesson isn't written yet — but the concept is on the map.</div>`; return; }
       flow = buildFlow(lesson);
-      idx = 0; maxIdx = 0; startTime = Date.now();
+      idx = 0; startTime = Date.now();
       run = { attempts: 0, correct: 0, solvedSteps: {}, challengeCleared: false, everFailedChallenge: false,
               summative: { attempts: 0, correct: 0 }, formative: { attempts: 0, correct: 0 }, misconceptions: [] };
       renderShell(); renderStep();
@@ -79,13 +79,13 @@
     }
 
     function renderDots() {
-      const dots = flow.map((s, i) => {
-        const reached = i <= maxIdx;
-        return `<button class="m-fd ${i === idx ? 'now' : i < idx ? 'done' : ''}${reached ? ' nav' : ''}" data-i="${i}" title="${KIND_LABEL[s.kind] || s.kind}"${reached ? '' : ' disabled'}>${KIND_ICON[s.kind] || '•'}</button>`;
-      }).join('');
+      // every step is freely clickable — the learner can wander the whole lesson
+      const dots = flow.map((s, i) =>
+        `<button class="m-fd ${i === idx ? 'now' : i < idx ? 'done' : ''} nav" data-i="${i}" title="${KIND_LABEL[s.kind] || s.kind}">${KIND_ICON[s.kind] || '•'}</button>`
+      ).join('');
       const box = host.querySelector('#m-flowdots');
       box.innerHTML = dots;
-      box.querySelectorAll('.m-fd.nav').forEach(b => b.onclick = () => { const i = +b.dataset.i; if (i <= maxIdx && i !== idx) { idx = i; renderStep(); } });
+      box.querySelectorAll('.m-fd.nav').forEach(b => b.onclick = () => { const i = +b.dataset.i; if (i !== idx) { idx = i; renderStep(); } });
     }
 
     function cleanup() { if (mountedDestroy) { try { mountedDestroy(); } catch (e) {} mountedDestroy = null; } Store.flushActivity(); }
@@ -97,7 +97,7 @@
     function back() { if (idx > 0) { idx--; renderStep(); } }
 
     function renderStep() {
-      cleanup(); if (idx > maxIdx) maxIdx = idx; renderDots();
+      cleanup(); renderDots();
       const step = flow[idx]; const card = host.querySelector('#m-card');
       feedback(''); progress(0, 0); setNext(false, 'Continue →');
       run.currentAnswer = null;
@@ -225,7 +225,9 @@
       const gradedA = s.attempts || run.attempts, gradedC = s.attempts ? s.correct : run.correct;
       const acc = gradedA ? gradedC / gradedA : 1;
       const score = Math.round(acc * 100);
-      const passed = score >= (concept.masteryScore || 80);
+      // Mastery needs evidence: at least one graded attempt. (Steps are freely
+      // navigable, so jumping straight to the results screen shouldn't master.)
+      const passed = gradedA > 0 && score >= (concept.masteryScore || 80);
       let stars = 1;                              // finished the core path
       if (passed) stars = 2;                      // met the mastery bar
       if (passed && run.challengeCleared) stars = 3;
